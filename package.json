@@ -1,0 +1,31 @@
+{
+  "name": "network-pi",
+  "version": "1.0.0",
+  "description": "Acker testing platform for pi controlled over the network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node server/index.ts",
+    "start:node": "node server",
+    "watch": "npm-run-all --parallel watch:index watch:server watch:open",
+    "watch:open": "opn http://localhost:3000",
+    "watch:server": "nodemon --exec \"npm start\" --e html,ts,js,json,pug --watch 'server/*.*'",
+    "build:index": "pug server/app/index.pug --out server/app",
+    "watch:index": "echo \"Skipped: watch:index\"",
+    "_watch:index": "npm run build:index -- --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^10.3.2",
+    "ack-pi": "github:ackerapple/ack-pi",
+    "nodemon": "^1.17.5",
+    "npm-run-all": "^4.1.3",
+    "ts-node": "^6.1.0",
+    "typescript": "^2.9.1",
+    "ws": "^5.2.0"
+  },
+  "devDependencies": {
+    "opn-cli": "^3.1.0"
+  }
+}
