@@ -40,7 +40,7 @@ wss.on('open', function(ws) {
 
 function setPins( data:pins ){
   for(let x in data){
-    data[x].num = <any>x
+    data[x].num = Number( <any>x )
     setPin( data[x] )
   }
 }

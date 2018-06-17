@@ -32,8 +32,10 @@
       }
 
       function submitForm(){
+console.log('sending')
         const dataString = document.getElementById("pins").value
         ws.send( dataString )
+	return false
       }
 
       console.log('started')
@@ -46,7 +48,7 @@
     <noscript style="color:red">Javascript is required but is turned off on your device</noscript>
     
     <h2 style="margin-bottom:0;">PINS</h2>
-    <form action="javascript:void" onsubmit="submitForm()">
+    <form onsubmit="return submitForm()">
       <textarea name="pins" id="pins" wrap="off" style="width:100%" rows="30"></textarea>
       <button type="submit" style="width:100%;">SEND PINS</button>
     </form>
