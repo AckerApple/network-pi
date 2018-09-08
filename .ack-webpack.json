@@ -1,0 +1,49 @@
+{
+  "init": {
+    "useWebpack": "no",
+    "usePug": "yes",
+    "useTran": "yes"
+  },
+  "init:angular": {
+    "reflect-metadata": "yes",
+    "rxjs": "yes",
+    "zone.js": "yes",
+    "@angular/core": "yes",
+    "@angular/common": "yes",
+    "@angular/compiler": "yes",
+    "@angular/compiler-cli": "yes",
+    "@angular/platform-browser": "yes",
+    "@angular/platform-browser-dynamic": "yes",
+    "@angular/forms": "yes",
+    "@angular/router": "yes",
+    "@angular/animations": "yes",
+    "@angular/http": "no"
+  },
+  "init:ack-angular": {
+    "install": "yes",
+    "installFx": "yes",
+    "addFxScripts": "no",
+    "prefxFilePath": "app/src/prefx.ts",
+    "runPrefx": "yes"
+  },
+  "init:ack-app": {
+    "appSrcPath": "app/src",
+    "buildPath": "app/dist/www",
+    "buildPathMemory": "",
+    "writeTsConfig": "yes",
+    "writeAngularJson": "yes",
+    "createTypings": "yes",
+    "createIndexTs": "yes",
+    "createIndexProdTs": "yes",
+    "createAppModuleTs": "yes",
+    "addScripts": "yes",
+    "addCompileTemplates": "yes",
+    "addBuildJs": "yes",
+    "html5Mode": "yes",
+    "addBuildCss": "yes",
+    "sassInputPath": "app/src/styles.scss",
+    "sassOutputPath": "app/src/assets/styles/styles.css",
+    "manageBuildScript": "yes",
+    "manageWatchScript": "yes"
+  }
+}

@@ -15,7 +15,7 @@ export interface pins{
 const basePath = __dirname
 console.log('basePath',basePath)
 
-const index = fs.readFileSync(path.join(basePath,"index.html")).toString()
+//const index = fs.readFileSync(path.join(basePath,"index.html")).toString()
 
 const server = http.createServer((req,res)=>{
   const rUrl={
@@ -27,7 +27,8 @@ const server = http.createServer((req,res)=>{
 
   if( rUrl.path==='/' ){
     res.writeHead(200, {"Content-Type": "text/html"})
-    return res.end( index )
+    return res.end( 'no index' )
+    //return res.end( index )
   }
 
   res.writeHead(404, {"Content-Type": "text/plain"})

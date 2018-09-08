@@ -14,7 +14,13 @@ export interface pinClasses{
 
 const isPiPlatform = os.platform()==="linux"
 const pinst = pi( isPiPlatform )
-const pins:pins = {}
+const pins:pins = {
+  "0":{
+    "num"  : 0,
+    "type" : "OUTPUT",
+    "mode" : "low"
+  }
+}
 const pinClasses:pinClasses = {}
  
 wss.on('connection', function(ws) {

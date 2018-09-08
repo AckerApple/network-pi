@@ -1,0 +1,30 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"><script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js" type="text/javascript" charset="utf-8"></script><script>const pins = {}
+const pin0 = {num:0, type:'OUTPUT', mode:'low'}
+//http://localhost:4200
+const hostPath = window.location.hostname + ':' + (3000 || window.location.port)
+const wsUrl = 'ws://' + hostPath +'/foo'
+console.log('starting',wsUrl)
+var ws = new WebSocket( wsUrl );
+ws.onopen = function () {
+console.log('websocket is connected ...')
+
+/*
+ws.send(JSON.stringify(pin0))
+setInterval(function(){
+pin0.mode = pin0.mode==='low' ? 'high' : 'low'
+ws.send(JSON.stringify(pin0))
+}, 1000)
+*/
+}
+ws.onmessage = function (ev) {
+const data = JSON.parse(ev.data)
+Object.assign(pins, data)
+document.getElementById("pins").value = JSON.stringify(data, null, 2)
+}
+function submitForm(){
+console.log('sending')
+const dataString = document.getElementById("pins").value
+ws.send( dataString )
+return false
+}
+console.log('started')</script><style>html, body{width:100%;height:100%;margin:0;padding:0;}</style></head><body><app>No Angular</app><noscript style="color:red">Javascript is required but is turned off on your device</noscript><h2 style="margin-bottom:0;">PINS</h2><form onsubmit="return submitForm()"><textarea id="pins" name="pins" wrap="off" style="width:100%" rows="30"></textarea><button type="submit" style="width:100%;">SEND PINS</button></form></body>
