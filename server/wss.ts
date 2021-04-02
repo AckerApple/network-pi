@@ -108,6 +108,7 @@ function setPins( data:pins ){
 
 function setPin( data:pin ){
   const isInput = data.type === 'INPUT'
+  const isOutput = data.type === 'OUTPUT'
 
   //apply pin type change
   if( !pinClasses[data.num] || pinClasses[data.num].type!==data.type ){
@@ -119,14 +120,14 @@ function setPin( data:pin ){
   //mode change
   if( data.mode ){
     pinClasses[data.num].mode = data.mode
+  }
 
-    if (isInput) {
-      console.log('set input pin', data)
-      setInputPin(pinClasses[data.num] as InputPin, data)
-    } else {
-      console.log('set output pin', data)
-      setOutputPin(pinClasses[data.num] as OutputPin, data)
-    }
+  if (isInput) {
+    console.log('set input pin', data)
+    setInputPin(pinClasses[data.num] as InputPin, data)
+  } else if (isOutput) {
+    console.log('set output pin', data)
+    setOutputPin(pinClasses[data.num] as OutputPin, data)
   } else {
     console.log('set pin', data)
   }
