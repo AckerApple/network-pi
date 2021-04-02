@@ -46,6 +46,7 @@ async function onConnect(ws) {
         case 'setPins':
           // console.log('dataString', typeof dataString, typeof data, typeof data.data, data)
           setPins( data.data );
+          send('pins', pins)
           break;
 
         case 'getPins': 'pins'

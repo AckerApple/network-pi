@@ -2,12 +2,15 @@ import { Component } from '@angular/core';
 
 declare const ws: any
 
+const hostPath = window.location.hostname + ':' + (3000 || window.location.port)
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  wsUrl = 'ws://' + hostPath +'/foo'
+
   loadCount = 0
   title = 'network-pi-webapp';
   pins: {[index: string]: any}
@@ -22,17 +25,19 @@ export class AppComponent {
     console.log('starting')
   }
 
-  ngOnInit(){
+  connect() {
     this.initSocket()
-    this.start()
-    console.log('started')
+    this.socketListen()
   }
 
   initSocket() {
-    const hostPath = window.location.hostname + ':' + (3000 || window.location.port)
-    const wsUrl = 'ws://' + hostPath +'/foo'
-    this.ws = new WebSocket( wsUrl );
-    console.log('starting',wsUrl)
+    console.log('starting', this.wsUrl)
+    this.ws = new WebSocket( this.wsUrl );
+  }
+
+  disconnect() {
+    this.ws.close()
+    delete this.ws
   }
 
   send(eventType:string, data?: any) {
@@ -41,7 +46,7 @@ export class AppComponent {
     }))
   }
 
-  start() {
+  socketListen() {
     const pins = {}
     const pin0 = {num:0, type:'OUTPUT', mode:'low'}
 
