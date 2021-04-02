@@ -144,12 +144,12 @@ function setOutputPin(pinClass: OutputPin, data: pin) {
   //mode change
   switch(data.mode){
     case 'HIGH':
-      console.log(data.num,'high')
+      console.log(data.num, data.mode)
       pinClass.high()
       break;
 
     case 'LOW':
-      console.log(data.num,'low')
+      console.log(data.num, data.mode)
       pinClass.low()
       break;
   }
