@@ -9,6 +9,7 @@
     "start:webapp": "cd app && npm run start -- --open",
     "start:webapp:pi": "cd app && npm run start:pi -- --open",
     "start:server": "ts-node server/index.ts",
+    "start:server:pi": "npm run start:server -- --host raspberrypi.local",
     "start:server:watch": "ts-node-dev server/index.ts",
     "start:server:watch:pi": "npm run start:server:watch -- --host raspberrypi.local",
     "watch": "npm-run-all --parallel start:webapp start:server:watch",
