@@ -55,10 +55,7 @@ async function onConnect(ws) {
           break;
 
         case 'command':
-          send('command-result', {
-            command: data.data,
-            result: await runCommand(data.command)
-          })
+          send('command-result', await runCommand(data.data))
           break;
 
         default:
