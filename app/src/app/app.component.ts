@@ -124,6 +124,6 @@ export class AppComponent {
     setTimeout(() => {
       pin.mode = orgMode
       this.submitPins()
-    }, 1000)
+    }, 250)
   }
 }
