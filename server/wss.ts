@@ -25,7 +25,7 @@ const pins:pins = {
   "0":{
     "num"  : 0,
     "type" : "OUTPUT",
-    "mode" : "low"
+    "mode" : "LOW"
   },
   "1":{
     "num"  : 1,
