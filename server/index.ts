@@ -1,10 +1,12 @@
+const nodeStatic = require('node-static');
 import * as http from "http"
 import * as url from "url"
 import * as nconf from "nconf"
 import { wss } from "./wss"
-// import * as path from "path"
+import * as path from "path"
 // import * as fs from "fs"
 
+var file = new(nodeStatic.Server)(path.join(__dirname,'../app/dist/network-pi-webapp'));
 export interface pin{
   number:number
 }
@@ -25,7 +27,8 @@ const server = http.createServer((req,res)=>{
   }
 
   //console.log("urlParts", rUrl)
-
+  file.serve(req, res);
+  /*
   if( rUrl.path==='/' ){
     res.writeHead(200, {"Content-Type": "text/html"})
     return res.end( 'no index' )
@@ -34,6 +37,7 @@ const server = http.createServer((req,res)=>{
 
   res.writeHead(404, {"Content-Type": "text/plain"})
   res.end("404 - page not found")
+  */
 })
 
 server.on('upgrade', function upgrade(request, socket, head) {

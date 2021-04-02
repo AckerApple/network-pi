@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { EMPTY } from 'rxjs';
 
 declare const ws: any
 
@@ -13,7 +14,7 @@ export class AppComponent {
 
   loadCount = 0
   title = 'network-pi-webapp';
-  pins: {[index: string]: any}
+  pins: {[index: string]: any} = {}
 
   terminalCommand: string
   commandResult: string
@@ -83,8 +84,11 @@ export class AppComponent {
 
         case 'pins':
           --this.loadCount
-          Object.assign(pins, data)
-          this.pins = data.data // JSON.stringify(data, null, 2)
+          Object.keys(data.data).forEach(key => {
+            this.pins[key] = this.pins[key] || {}
+            Object.assign(this.pins[key], data.data[key])
+          });
+          // this.pins = data.data // JSON.stringify(data, null, 2)
           break;
 
         default:
@@ -108,5 +112,18 @@ export class AppComponent {
   sendTerminalCommand(command: string) {
     ++this.loadCount
     this.send('command', command)
+  }
+
+  shortPressPin(pin: any) {
+    const orgMode = pin.mode === 'HIGH' ? 'HIGH' : 'LOW'
+    const newMode = orgMode === 'HIGH' ? 'LOW' : 'HIGH'
+
+    pin.mode = newMode
+    this.submitPins()
+
+    setTimeout(() => {
+      pin.mode = orgMode
+      this.submitPins()
+    }, 1000)
   }
 }
