@@ -10,7 +10,9 @@ const hostPath = window.location.hostname + ':' + (3000 || window.location.port)
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  wsUrl = 'ws://' + hostPath +'/foo'
+  config = {
+    wsUrl: 'ws://' + hostPath +'/foo'
+  }
 
   loadCount = 0
   title = 'network-pi-webapp';
@@ -29,11 +31,12 @@ export class AppComponent {
   connect() {
     this.initSocket()
     this.socketListen()
+    this.saveLocalStorage()
   }
 
   initSocket() {
-    console.log('starting', this.wsUrl)
-    this.ws = new WebSocket( this.wsUrl );
+    console.log('starting', this.config.wsUrl)
+    this.ws = new WebSocket( this.config.wsUrl );
   }
 
   disconnect() {
@@ -102,6 +105,14 @@ export class AppComponent {
     ++this.loadCount
     this.send('setPins', this.pins)
     return false
+  }
+
+  saveLocalStorage() {
+    localStorage.networkPi = JSON.stringify(this.config)
+  }
+
+  loadLocalStorage() {
+    this.config = JSON.parse(localStorage.networkPi) || this.config
   }
 
   setPinsByString(pins: string) {
