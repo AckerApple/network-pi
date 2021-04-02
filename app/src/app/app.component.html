@@ -334,10 +334,13 @@
       <textarea wrap="off" style="width:100%" rows="30"
       (keyup) ="setPinsByString($event.target.value)"
       >{{pins | json}}</textarea>
-      <button type="submit" style="width:100%;min-width:300px">SEND PINS</button>
+      <div style="display:flex;">
+        <button type="button" (click)="reloadPins()" style="width:100%;min-width:300px">REFRESH PINS</button>
+        <button type="submit" style="width:100%;min-width:300px">SEND PINS</button>
+      </div>
     </form>
 
-    <div *ngIf="loadCount">... loading ...</div>
+    <div *ngIf="loadCount">... loading {{loadCount}} items ...</div>
 
     <h2 style="margin-bottom:0;">MESSAGE</h2>
     <textarea disabled wrap="off" style="width:100%" rows="30">{{wsMessage | json}}</textarea>

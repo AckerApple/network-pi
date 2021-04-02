@@ -1,7 +1,6 @@
 import * as WebSocket from "ws"
 import * as os from "os"
 import { pin, pi, Pin, InputPin, OutputPin } from "ack-pi"
-import { send } from "node:process";
 const { exec } = require("child_process");
 
 export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'command-result'
@@ -13,7 +12,7 @@ export interface WsMessage {
 export const wss = new WebSocket.Server({noServer: true})
 
 export interface pins{
-  [index:number]:pin
+  [index:number] : pin
 }
 
 export interface pinClasses{
@@ -27,6 +26,11 @@ const pins:pins = {
     "num"  : 0,
     "type" : "OUTPUT",
     "mode" : "low"
+  },
+  "1":{
+    "num"  : 1,
+    "type" : "INPUT",
+    // "mode" : "low"
   }
 }
 const pinClasses:pinClasses = {}
@@ -103,30 +107,49 @@ function setPins( data:pins ){
 }
 
 function setPin( data:pin ){
+  const isInput = data.type === 'INPUT'
+
   //apply pin type change
   if( !pinClasses[data.num] || pinClasses[data.num].type!==data.type ){
-    pinClasses[data.num] = data.type==='INPUT' ? pinst.input( data.num ) : pinst.output( data.num )
+    pinClasses[data.num] = isInput ? pinst.input( data.num ) : pinst.output( data.num )
   }
+
+  pins[ data.num ] = data
 
   //mode change
   if( data.mode ){
     pinClasses[data.num].mode = data.mode
-    const pClass:OutputPin = <OutputPin>pinClasses[data.num]
 
-    //mode change
-    switch(data.mode){
-      case 'high':
-        console.log(data.num,'high')
-        pClass.high()
-        break;
-
-      case 'low':
-        console.log(data.num,'low')
-        pClass.low()
-        break;
+    if (isInput) {
+      console.log('set input pin', data)
+      setInputPin(pinClasses[data.num] as InputPin, data)
+    } else {
+      console.log('set output pin', data)
+      setOutputPin(pinClasses[data.num] as OutputPin, data)
     }
+  } else {
+    console.log('set pin', data)
   }
+}
 
-  console.log('set pin', data)
-  pins[ data.num ] = data
+function setInputPin(pinClass: InputPin, data: pin) {
+  const targetPin = (pins[data.num] as any)
+  targetPin.state = pinClass.getState()
+  console.log('targetPin', targetPin)
+}
+
+
+function setOutputPin(pinClass: OutputPin, data: pin) {
+  //mode change
+  switch(data.mode){
+    case 'high':
+      console.log(data.num,'high')
+      pinClass.high()
+      break;
+
+    case 'low':
+      console.log(data.num,'low')
+      pinClass.low()
+      break;
+  }
 }

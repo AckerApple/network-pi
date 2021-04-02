@@ -46,14 +46,18 @@ export class AppComponent {
     }))
   }
 
+  reloadPins() {
+    ++this.loadCount
+    this.send('getPins')
+  }
+
   socketListen() {
     const pins = {}
-    const pin0 = {num:0, type:'OUTPUT', mode:'low'}
+    // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
 
     this.ws.onopen = () => {
       console.log('websocket is connected ...')
-      ++this.loadCount
-      this.send('getPins')
+      this.reloadPins()
       /*
         ws.send(JSON.stringify(pin0))
         setInterval(function(){
@@ -65,6 +69,7 @@ export class AppComponent {
 
     this.ws.onmessage = ev => {
       const data = JSON.parse(ev.data)
+      this.wsMessage = data
 
       switch (data.eventType) {
         case 'log':
@@ -85,7 +90,6 @@ export class AppComponent {
         default:
           this.wsMessage = data
       }
-
     }
   }
 
