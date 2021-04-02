@@ -1,6 +1,11 @@
 import * as WebSocket from "ws"
 import * as os from "os"
 import { pin, pi, Pin, InputPin, OutputPin } from "ack-pi"
+const { exec } = require("child_process");
+export interface WsMessage {
+  [index:string]: any
+  eventType: 'setPins' | 'command' | 'log' | 'getPins'
+}
 
 export const wss = new WebSocket.Server({noServer: true})
 
@@ -22,27 +27,72 @@ const pins:pins = {
   }
 }
 const pinClasses:pinClasses = {}
- 
-wss.on('connection', function(ws) {
-  console.log('connected')
-  ws.send( JSON.stringify(pins) )
 
-  ws.on('message', function(dataString:string) {
+wss.on('connection', onConnect)
+wss.on('open', function(ws) {
+  console.log('opened')
+  ws.send('---- open something -----')
+})
+
+async function onConnect(ws) {
+  console.log('connected')
+  ws.on('message', onMessage)
+
+  async function onMessage(dataString:string) {
     try{
-      const data:pins = JSON.parse( dataString )
-      setPins( data )
+      const data: WsMessage = JSON.parse( dataString )
+
+      switch (data.eventType) {
+        case 'setPins':
+          setPins( data );
+          break;
+
+        case 'getPins':
+          ws.send( JSON.stringify({
+            eventType: 'pins', pins
+          }))
+          break;
+
+        case 'command':
+          const reply = {
+            eventType: 'command-result',
+            command: data.command,
+            result: await runCommand(data.command)
+          }
+          ws.send(JSON.stringify(reply))
+          break;
+
+        default:
+          ws.send(JSON.stringify({
+            eventType: 'log',
+            message: {
+              message: `received unknown command ${data.eventType}`,
+              data
+            }
+          }))
+      }
+
     }catch(e){
       console.error(e)
       return
     }
+  }
+}
+
+function runCommand(command: string) {
+  return new Promise((res, rej) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        return res(error)
+      }
+      if (stderr) {
+          return res(stderr)
+      }
+
+      res(stdout)
+    });
   })
-})
-
-wss.on('open', function(ws) {
-  console.log('opened')
-  ws.send('---- open something -----')  
-})
-
+}
 
 function setPins( data:pins ){
   for(let x in data){
@@ -75,7 +125,7 @@ function setPin( data:pin ){
         break;
     }
   }
-  
+
   console.log('set pin', data)
   pins[ data.num ] = data
 }
