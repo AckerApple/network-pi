@@ -322,7 +322,7 @@
   </div>
 
   <h2 style="margin-bottom:0;">PINS</h2>
-  <form (submit)="submitForm()" action="javascript:">
+  <form (submit)="submitPins()" action="javascript:">
     <textarea wrap="off" style="width:100%" rows="30"
     (keyup) ="setPinsByString($event.target.value)"
     >{{pins | json}}</textarea>

@@ -35,8 +35,10 @@ export class AppComponent {
     console.log('starting',wsUrl)
   }
 
-  send(data: {[index:string]: any}) {
-    this.ws.send(JSON.stringify(data))
+  send(eventType:string, data?: any) {
+    this.ws.send(JSON.stringify({
+      eventType, data
+    }))
   }
 
   start() {
@@ -46,7 +48,7 @@ export class AppComponent {
     this.ws.onopen = () => {
       console.log('websocket is connected ...')
       ++this.loadCount
-      this.send({eventType: 'getPins'})
+      this.send('getPins')
       /*
         ws.send(JSON.stringify(pin0))
         setInterval(function(){
@@ -61,18 +63,18 @@ export class AppComponent {
 
       switch (data.eventType) {
         case 'log':
-          this.wsMessage = data.message
+          this.wsMessage = data.data
           break
 
         case 'command-result':
           --this.loadCount
-          this.commandResult = data.result
+          this.commandResult = data.data
           break
 
         case 'pins':
           --this.loadCount
           Object.assign(pins, data)
-          this.pins = data // JSON.stringify(data, null, 2)
+          this.pins = data.data // JSON.stringify(data, null, 2)
           break;
 
         default:
@@ -82,11 +84,10 @@ export class AppComponent {
     }
   }
 
-  submitForm(){
+  submitPins(){
     console.log('sending')
-    const dataString = JSON.stringify(this.pins)
     ++this.loadCount
-    this.ws.send( dataString )
+    this.send('setPins', this.pins)
     return false
   }
 
@@ -96,12 +97,7 @@ export class AppComponent {
   }
 
   sendTerminalCommand(command: string) {
-    const data = {
-      eventType: 'command',
-      command
-    }
-
     ++this.loadCount
-    this.ws.send(JSON.stringify(data))
+    this.send('command', command)
   }
 }

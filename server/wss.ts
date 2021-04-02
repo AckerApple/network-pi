@@ -1,10 +1,13 @@
 import * as WebSocket from "ws"
 import * as os from "os"
 import { pin, pi, Pin, InputPin, OutputPin } from "ack-pi"
+import { send } from "node:process";
 const { exec } = require("child_process");
+
+export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'command-result'
 export interface WsMessage {
   [index:string]: any
-  eventType: 'setPins' | 'command' | 'log' | 'getPins'
+  eventType: eventTypes
 }
 
 export const wss = new WebSocket.Server({noServer: true})
@@ -29,10 +32,7 @@ const pins:pins = {
 const pinClasses:pinClasses = {}
 
 wss.on('connection', onConnect)
-wss.on('open', function(ws) {
-  console.log('opened')
-  ws.send('---- open something -----')
-})
+wss.on('open', (ws) => console.log('opened'))
 
 async function onConnect(ws) {
   console.log('connected')
@@ -44,38 +44,39 @@ async function onConnect(ws) {
 
       switch (data.eventType) {
         case 'setPins':
-          setPins( data );
+          // console.log('dataString', typeof dataString, typeof data, typeof data.data, data)
+          setPins( data.data );
           break;
 
-        case 'getPins':
-          ws.send( JSON.stringify({
-            eventType: 'pins', pins
-          }))
+        case 'getPins': 'pins'
+          // console.log('getting pins')
+          send('pins', pins)
           break;
 
         case 'command':
-          const reply = {
-            eventType: 'command-result',
-            command: data.command,
+          send('command-result', {
+            command: data.data,
             result: await runCommand(data.command)
-          }
-          ws.send(JSON.stringify(reply))
+          })
           break;
 
         default:
-          ws.send(JSON.stringify({
-            eventType: 'log',
-            message: {
-              message: `received unknown command ${data.eventType}`,
-              data
-            }
-          }))
+          send('log', {
+            message: `received unknown command ${data.eventType}`,
+            data
+          })
       }
 
     }catch(e){
       console.error(e)
       return
     }
+  }
+
+  function send(eventType: eventTypes, data: any) {
+    ws.send( JSON.stringify({
+      eventType, data
+    }))
   }
 }
 
@@ -95,8 +96,10 @@ function runCommand(command: string) {
 }
 
 function setPins( data:pins ){
+  // console.log('data', typeof data, data)
   for(let x in data){
     data[x].num = Number( <any>x )
+    // data[x].num = x as any
     setPin( data[x] )
   }
 }
