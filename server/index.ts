@@ -1,8 +1,9 @@
 import { wss } from "./wss"
-import * as path from "path"
 import * as http from "http"
 import * as url from "url"
-import * as fs from "fs"
+import * as nconf from "nconf"
+// import * as path from "path"
+// import * as fs from "fs"
 
 export interface pin{
   number:number
@@ -37,7 +38,7 @@ const server = http.createServer((req,res)=>{
 
 server.on('upgrade', function upgrade(request, socket, head) {
   const pathname = url.parse(request.url).pathname;
- 
+
   if (pathname === '/foo') {
     wss.handleUpgrade(request, socket, head, function done(ws) {
       console.log('connection foo')
@@ -53,6 +54,9 @@ server.on('upgrade', function upgrade(request, socket, head) {
   }
 })
 
-server.listen(3000,()=>{
+nconf.argv().env() // read params
+const host = nconf.get('host') || undefined
+
+server.listen(3000, host, ()=>{
   console.log('server started - localhost:3000')
 })
