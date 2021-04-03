@@ -43,6 +43,7 @@ const server = http.createServer((req,res)=>{
 })
 
 server.on('upgrade', function upgrade(request, socket, head) {
+  console.log('starting websocket')
   const pathname = url.parse(request.url).pathname;
 
   if (pathname === '/foo') {

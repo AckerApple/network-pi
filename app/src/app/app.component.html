@@ -322,9 +322,11 @@
       </svg>
     </div>
     <div>
-      <input *ngIf="!ws" type="text" (keyup)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125" placeholder="Web Socket URL" />
-      <button style="background-color: red;" *ngIf="ws" type="submit" (click)="disconnect()">disconnect</button>
-      <button *ngIf="!ws" type="submit" (click)="connect()">connect</button>
+      <form method="post" (submit)="connect()" action="javascript:">
+        <input *ngIf="!ws" type="text" (keyup)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125" placeholder="Web Socket URL" />
+        <button style="background-color: red;" *ngIf="ws" type="submit" (click)="disconnect()">disconnect</button>
+        <button *ngIf="!ws" type="submit">connect</button>
+      </form>
     </div>
   </div>
 

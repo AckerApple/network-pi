@@ -6,9 +6,10 @@
   "scripts": {
     "save": "npm run build && git add . && git commit -m \"update\" && git push",
     "start": "npm-run-all --parallel start:server start:webapp",
-    "start:pi": "npm-run-all --parallel start:server:pi",
+    "serve": "cd app && ng serve ./app/dist/network-pi-webapp",
+    "start:pi": "npm-run-all --parallel start:server:pi start:webapp:pi",
     "start:webapp": "cd app && npm run start -- --open",
-    "start:webapp:pi": "cd app && npm run start:pi -- --open",
+    "start:webapp:pi": "cd app && npm run start -- --host raspberrypi.local --port 80",
     "build": "cd app && npm run build",
     "start:server": "ts-node server/index",
     "start:server:pi": "npm run start:server -- --host raspberrypi.local --port 80",
