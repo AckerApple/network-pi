@@ -62,5 +62,5 @@ nconf.argv().env() // read params
 const host = nconf.get('host') || undefined
 
 server.listen(3000, host, ()=>{
-  console.log('server started - localhost:3000')
+  console.log(`server started - ${host}:3000`)
 })
