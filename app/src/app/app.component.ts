@@ -10,13 +10,18 @@ const hostPath = window.location.hostname + ':' + (3000 || window.location.port)
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  config = {
-    wsUrl: 'ws://' + hostPath +'/foo'
+  strobePins: number
+
+  config: {
+    wsUrl: string
+    pins: {[index: string]: any}
+  } = this.loadLocalStorage() || {
+    wsUrl: 'ws://' + hostPath +'/foo',
+    pins: {}
   }
 
   loadCount = 0
   title = 'network-pi-webapp';
-  pins: {[index: string]: any} = {}
 
   terminalCommand: string
   commandResult: string
@@ -26,6 +31,8 @@ export class AppComponent {
 
   constructor() {
     console.log('starting')
+    this.config.pins = this.config.pins || {}
+    this.connect()
   }
 
   connect() {
@@ -88,8 +95,8 @@ export class AppComponent {
         case 'pins':
           --this.loadCount
           Object.keys(data.data).forEach(key => {
-            this.pins[key] = this.pins[key] || {}
-            Object.assign(this.pins[key], data.data[key])
+            this.config.pins[key] = this.config.pins[key] || {}
+            Object.assign(this.config.pins[key], data.data[key])
           });
           // this.pins = data.data // JSON.stringify(data, null, 2)
           break;
@@ -103,7 +110,7 @@ export class AppComponent {
   submitPins(){
     console.log('sending')
     ++this.loadCount
-    this.send('setPins', this.pins)
+    this.send('setPins', this.config.pins)
     return false
   }
 
@@ -112,12 +119,26 @@ export class AppComponent {
   }
 
   loadLocalStorage() {
-    this.config = JSON.parse(localStorage.networkPi) || this.config
+    return this.config = JSON.parse(localStorage.networkPi) || this.config
   }
 
   setPinsByString(pins: string) {
     const newPins = JSON.parse(pins)
-    this.pins = newPins
+    this.config.pins = newPins
+  }
+
+  blinkPin(pin: any) {
+    if (pin.blink) {
+      clearInterval(pin.blink)
+      pin.mode = 'LOW'
+      delete pin.blink
+      this.submitPins()
+      return
+    }
+
+    pin.blink = setInterval(() => {
+      this.togglePin(pin)
+    }, 500)
   }
 
   sendTerminalCommand(command: string) {
@@ -125,16 +146,43 @@ export class AppComponent {
     this.send('command', command)
   }
 
-  shortPressPin(pin: any) {
+  togglePin(pin: any) {
     const orgMode = pin.mode === 'HIGH' ? 'HIGH' : 'LOW'
     const newMode = orgMode === 'HIGH' ? 'LOW' : 'HIGH'
 
     pin.mode = newMode
     this.submitPins()
+  }
+
+  shortPressPin(pin: any) {
+    this.togglePin(pin)
 
     setTimeout(() => {
-      pin.mode = orgMode
-      this.submitPins()
+      this.togglePin(pin)
     }, 250)
+  }
+
+  toggleStrobePins() {
+    if (this.strobePins) {
+      clearInterval(this.strobePins)
+      delete this.strobePins
+      return
+    }
+
+    this.strobePinsAction()
+  }
+
+  strobePinsAction() {
+    const pinKeys = Object.keys(this.config.pins)
+    const pinCount = pinKeys.length
+
+    this.strobePins = setInterval(() => {
+      pinKeys.forEach((key,i) => {
+        setTimeout(() => {
+          this.togglePin(this.config.pins[key])
+        }, i * 500)
+      });
+
+    }, pinCount * 500)
   }
 }

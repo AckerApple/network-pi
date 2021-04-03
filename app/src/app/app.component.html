@@ -333,23 +333,37 @@
     <form (submit)="submitPins()" action="javascript:">
       <textarea wrap="off" style="width:100%" rows="30"
       (keyup) ="setPinsByString($event.target.value)"
-      >{{pins | json}}</textarea>
+      >{{config.pins | json}}</textarea>
       <div style="display:flex;">
         <button type="button" (click)="reloadPins()" style="width:100%;min-width:300px">REFRESH PINS</button>
+        <button type="button" [style.background-color]="strobePins ? 'green' : null" (click)="toggleStrobePins()" style="width:100%;min-width:300px">STROBE PINS</button>
         <button type="submit" style="width:100%;min-width:300px">SEND PINS</button>
       </div>
     </form>
 
-    <div *ngFor="let pin of pins | keyvalue">
-      <div style="display:flex;margin:.3em;">
+    <div *ngFor="let pin of config.pins | keyvalue">
+      <div style="display:flex;margin:1em;">
         <div>pin: {{pin.key}}</div>
+        <button style="font-size:1.4em;" type="button" (click)="pin.value.type = pin.value.type === 'INPUT' ? 'OUTPUT' : 'INPUT'">{{pin.value.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
         <div *ngIf="pin.value.type === 'OUTPUT'" style="flex-grow:1">
-          <button style="font-size:1.2em;" type="button" (click)="pin.value.type = pin.value.type === 'INPUT' ? 'OUTPUT' : 'INPUT'" style="width:100%">{{pin.value.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
-          <button style="font-size:1.2em;" type="submit" (click)="pin.value.mode='LOW';shortPressPin(pin.value)">LOW</button>
-          <button style="font-size:1.2em;" type="submit" (click)="pin.value.mode='HIGH';shortPressPin(pin.value)">HIGH</button>
-          <button style="font-size:1.2em;" type="submit" (click)="pin.value.mode='HIGH';shortPressPin(pin.value)">short low</button>
-          <button style="font-size:1.2em;" type="submit" (click)="pin.value.mode='LOW';shortPressPin(pin.value)">short high</button>
-          <button style="font-size:1.2em;" type="submit" (click)="shortPressPin(pin.value)">short press</button>
+          <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='LOW' ? 'green' : undefined"
+            (click)="pin.value.mode='LOW';submitPins(pin.value)"
+          >LOW</button>
+          <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='HIGH' ? 'green' : undefined"
+            (click)="pin.value.mode='HIGH';submitPins(pin.value)"
+          >HIGH</button>
+          <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='LOW'"
+            (click)="pin.value.mode='HIGH';shortPressPin(pin.value)"
+          >short low</button>
+          <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='HIGH'"
+            (click)="pin.value.mode='LOW';shortPressPin(pin.value)"
+          >short high</button>
+          <button style="font-size:1.4em;" type="button"
+            (click)="blinkPin(pin.value)" [style.background-color]="pin.value.blink ? 'green' : undefined"
+          >blink</button>
+          <button style="font-size:1.4em;" type="button"
+            (click)="shortPressPin(pin.value)"
+          >short press</button>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@
   "scripts": {
     "save": "npm run build && git add . && git commit -m \"update\" && git push",
     "start": "npm-run-all --parallel start:server start:webapp",
+    "start:pi": "npm-run-all --parallel start:server:pi",
     "start:webapp": "cd app && npm run start -- --open",
     "start:webapp:pi": "cd app && npm run start:pi -- --open",
     "build": "cd app && npm run build",
