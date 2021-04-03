@@ -64,5 +64,5 @@ const host = nconf.get('host') || undefined
 const port = nconf.get('port') || 3000
 
 server.listen(port, host, ()=>{
-  console.log(`server started - ${host || 'localhost'}:3000`)
+  console.log(`server started - ${host || 'localhost'}:${port}`)
 })
