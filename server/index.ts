@@ -22,6 +22,7 @@ console.log('basePath',basePath)
 //const index = fs.readFileSync(path.join(basePath,"index.html")).toString()
 
 const server = http.createServer((req,res)=>{
+  console.log('request')
   const rUrl={
     path  : req.url.split('?').shift(),
     query : url.parse(req.url, true).query
