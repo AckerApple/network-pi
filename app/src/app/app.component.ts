@@ -119,7 +119,12 @@ export class AppComponent {
   }
 
   loadLocalStorage() {
-    return this.config = JSON.parse(localStorage.networkPi) || this.config
+    try {
+      const localValues = localStorage.networkPi
+      return this.config = JSON.parse(localValues) || this.config
+    } catch (err) {
+      console.error('unable to load past settings', err)
+    }
   }
 
   setPinsByString(pins: string) {

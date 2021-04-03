@@ -5,8 +5,9 @@ import * as nconf from "nconf"
 import { wss } from "./wss"
 import * as path from "path"
 // import * as fs from "fs"
-
-var file = new(nodeStatic.Server)(path.join(__dirname,'../app/dist/network-pi-webapp'));
+const serveFilesFrom = path.join(__dirname,'../app/dist/network-pi-webapp')
+console.log('serving static files from', serveFilesFrom)
+var file = new(nodeStatic.Server)(serveFilesFrom);
 export interface pin{
   number:number
 }
@@ -60,7 +61,8 @@ server.on('upgrade', function upgrade(request, socket, head) {
 
 nconf.argv().env() // read params
 const host = nconf.get('host') || undefined
+const port = nconf.get('port') || 3000
 
-server.listen(3000, host, ()=>{
-  console.log(`server started - ${host}:3000`)
+server.listen(port, host, ()=>{
+  console.log(`server started - ${host || 'localhost'}:3000`)
 })

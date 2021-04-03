@@ -11,7 +11,7 @@
     "start:webapp:pi": "cd app && npm run start:pi -- --open",
     "build": "cd app && npm run build",
     "start:server": "ts-node server/index",
-    "start:server:pi": "npm run start:server -- --host raspberrypi.local",
+    "start:server:pi": "npm run start:server -- --host raspberrypi.local --port 80",
     "start:server:watch": "ts-node-dev server/index",
     "start:server:watch:pi": "npm run start:server:watch -- --host raspberrypi.local",
     "test": "echo \"Error: no test specified\" && exit 1",
