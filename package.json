@@ -9,7 +9,7 @@
     "serve": "cd app && ng serve ./app/dist/network-pi-webapp",
     "start:pi": "npm-run-all --parallel start:server:pi start:webapp:pi",
     "start:webapp": "cd app && npm run start -- --open",
-    "start:webapp:pi": "cd app && npm run start -- --host raspberrypi.local --port 80",
+    "start:webapp:pi": "sudo cd app && npm run start -- --host raspberrypi.local --port 80",
     "build": "cd app && npm run build",
     "start:server": "ts-node server/index",
     "start:server:pi": "npm run start:server -- --host raspberrypi.local --port 3000",

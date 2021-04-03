@@ -136,7 +136,6 @@ function setPin( data:pin ){
 function setInputPin(pinClass: InputPin, data: pin) {
   const targetPin = (pins[data.num] as any)
   targetPin.state = pinClass.getState()
-  console.log('targetPin', targetPin)
 }
 
 
