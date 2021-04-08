@@ -8,6 +8,12 @@ import * as path from "path"
 const serveFilesFrom = path.join(__dirname,'../app/dist/network-pi-webapp')
 console.log('serving static files from', serveFilesFrom)
 var file = new(nodeStatic.Server)(serveFilesFrom);
+
+// configurations
+nconf.argv().env() // read params
+const host = nconf.get('host') || undefined
+const port = nconf.get('port') || 3000
+
 export interface pin{
   number:number
 }
@@ -18,8 +24,6 @@ export interface pins{
 
 const basePath = __dirname
 console.log('basePath',basePath)
-
-//const index = fs.readFileSync(path.join(basePath,"index.html")).toString()
 
 const server = http.createServer((req,res)=>{
   console.log('request', req.url)
@@ -60,10 +64,6 @@ server.on('upgrade', function upgrade(request, socket, head) {
     socket.destroy()
   }
 })
-
-nconf.argv().env() // read params
-const host = nconf.get('host') || undefined
-const port = nconf.get('port') || 3000
 
 server.listen(port, host, ()=>{
   console.log(`server started - ${host || 'localhost'}:${port}`)

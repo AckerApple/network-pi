@@ -3,7 +3,12 @@ import { EMPTY } from 'rxjs';
 
 declare const ws: any
 
-const hostPath = window.location.hostname + ':' + (3000 || window.location.port)
+const urlParams = new URLSearchParams(window.location.search)
+const forcePort = urlParams.get('port')
+const forceHost = urlParams.get('host')
+const port = window.location.port || forcePort || 3000
+const hostPath = window.location.hostname + ':' + port
+const wsUrl = 'ws://' + hostPath +'/foo'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -16,8 +21,7 @@ export class AppComponent {
     wsUrl: string
     pins: {[index: string]: any}
   } = this.loadLocalStorage() || {
-    wsUrl: 'ws://' + hostPath +'/foo',
-    pins: {}
+    wsUrl, pins: {}
   }
 
   loadCount = 0
@@ -31,6 +35,11 @@ export class AppComponent {
 
   constructor() {
     console.log('starting')
+
+    if (forceHost || forcePort) {
+      this.config.wsUrl = wsUrl
+    }
+
     this.config.pins = this.config.pins || {}
     this.connect()
   }

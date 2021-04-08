@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:pi": "npm run start -- --host raspberrypi.local",
+    "start:pi": "npm run start -- --host ackers-mac-mini.local",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
