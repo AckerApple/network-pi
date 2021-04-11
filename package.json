@@ -10,7 +10,7 @@
     "serve:ng": "cd app && ng serve ./app/dist/network-pi-webapp",
     "start:pi": "npm-run-all --parallel start:server:pi start:webapp:pi",
     "start:pi:ng": "npm-run-all --parallel start:server:pi start:webapp:ng",
-    "start:webapp": "ack-reload --dir ./app/dist/network-pi-webapp/ --host 0.0.0.0 --port 3000",
+    "start:webapp": "ack-reload --dir ./app/dist/network-pi-webapp/ --host 0.0.0.0 --port 80",
     "start:webapp:ng": "cd app && npm run start -- --open --host 0.0.0.0 --disable-host-check",
     "start:webapp:pi": "sudo npm run start:webapp -- --host 0.0.0.0 --disable-host-check --port 80",
     "build": "cd app && npm run build",
