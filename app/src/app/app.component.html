@@ -8,6 +8,16 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  .disable-select {
+    touch-action: manipulation;
+
+    user-select: none; /* supported by Chrome and Opera */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+  }
+
   h1,h2,h3,h4,h5,h6 {
     margin: 8px 0;
   }
@@ -44,15 +54,6 @@
 
   .toolbar #twitter-logo:hover {
     opacity: 0.8;
-  }
-
-  .content {
-    display: flex;
-    margin: 82px auto 32px;
-    padding: 0 16px;
-    max-width: 960px;
-    flex-direction: column;
-    align-items: center;
   }
 
   svg.material-icons {
@@ -299,7 +300,9 @@
     </a>
 </div>
 
-<div class="content" role="main">
+<div role="main">
+  <br /><br /><br />
+  <br /><br /><br />
   <div style="display:flex">
 
     <!-- Highlight Card -->
@@ -323,57 +326,106 @@
     </div>
     <div>
       <form method="post" (submit)="connect()" action="javascript:">
-        <input *ngIf="!ws" type="text" (keyup)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125" placeholder="Web Socket URL" />
+        <input *ngIf="!ws" type="text"
+          (change)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125"
+          placeholder="Web Socket URL"
+        />
         <button style="background-color: red;" *ngIf="ws" type="submit" (click)="disconnect()">disconnect</button>
         <button *ngIf="!ws" type="submit">connect</button>
       </form>
     </div>
   </div>
+  <br /><br />
 
   <ng-container *ngIf="ws">
-    <h2 style="margin-bottom:0;">PINS</h2>
-    <form (submit)="submitPins()" action="javascript:">
-      <textarea wrap="off" style="width:100%" rows="30"
-      (keyup) ="setPinsByString($event.target.value)"
-      >{{config.pins | json}}</textarea>
-      <div style="display:flex;">
-        <button type="button" (click)="reloadPins()" style="width:100%;min-width:300px">REFRESH PINS</button>
-        <button type="button" [style.background-color]="strobePins ? 'green' : null" (click)="toggleStrobePins()" style="width:100%;min-width:300px">STROBE PINS</button>
-        <button type="submit" style="width:100%;min-width:300px">SEND PINS</button>
+    <form (submit)="submitPins()" action="javascript:" style="display: block;width: 100%;">
+      <div *ngIf="config.debug" style="display: flex;flex-wrap:wrap">
+        <div style="flex-grow:1;margin:.3em;">
+          <h3 style="margin-bottom:0;">PINS</h3>
+          <div style="width: 100%;display:flex;">
+            <textarea wrap="off" style="flex-grow:1" rows="30"
+            (keyup) ="setPinsByString($event.target.value)"
+            >{{config.pins | json}}</textarea>
+          </div>
+        </div>
+
+        <div style="flex-grow:1;margin:.3em;">
+          <h3 style="margin-bottom:0;">MESSAGES</h3>
+          <div style="width: 100%;display:flex;">
+            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wsMessage | json}}</textarea>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap">
+        <button type="button" (click)="config.debug=!config.debug;saveConfig()" style="flex-grow:1;"
+          [style.background-color] = "config.debug ? 'green' : undefined"
+        >DEBUG</button>
+        <button type="button" (click)="reloadPins()" style="flex-grow:1;"
+        >REFRESH PINS</button>
+        <button type="button" [style.background-color]="strobePins ? 'green' : null" (click)="toggleStrobePins()" style="flex-grow:1;"
+        >STROBE PINS</button>
+        <button type="button" style="flex-grow:1;" (click)="addPin()"
+        >ADD PIN</button>
+        <button type="submit" style="flex-grow:1;"
+        >SAVE PINS</button>
       </div>
     </form>
 
-    <div *ngFor="let pin of config.pins | keyvalue">
-      <div style="display:flex;margin:1em;">
-        <div>pin: {{pin.key}}</div>
-        <button style="font-size:1.4em;" type="button" (click)="pin.value.type = pin.value.type === 'INPUT' ? 'OUTPUT' : 'INPUT'">{{pin.value.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
-        <div *ngIf="pin.value.type === 'OUTPUT'" style="flex-grow:1">
-          <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='LOW' ? 'green' : undefined"
-            (click)="pin.value.mode='LOW';submitPins(pin.value)"
-          >LOW</button>
-          <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='HIGH' ? 'green' : undefined"
-            (click)="pin.value.mode='HIGH';submitPins(pin.value)"
-          >HIGH</button>
-          <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='LOW'"
-            (click)="pin.value.mode='HIGH';shortPressPin(pin.value)"
-          >short low</button>
-          <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='HIGH'"
-            (click)="pin.value.mode='LOW';shortPressPin(pin.value)"
-          >short high</button>
+    <div class="disable-select">
+      <div *ngFor="let pin of config.pins | keyvalue">
+        <div style="display:flex;margin:1em;">
+          <div style="font-size:1.4em;">pin: {{pin.key}}</div>
           <button style="font-size:1.4em;" type="button"
-            (click)="blinkPin(pin.value)" [style.background-color]="pin.value.blink ? 'green' : undefined"
-          >blink</button>
-          <button style="font-size:1.4em;" type="button"
-            (click)="shortPressPin(pin.value)"
-          >short press</button>
+            (click)="pin.value.type = pin.value.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
+          >{{pin.value.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
+          <ng-container *ngIf="pin.value.type === 'OUTPUT'">
+            <button style="font-size:1.4em;"
+              (mouseup)="pinLow(pin.value)"
+              (mousedown)="pinHigh(pin.value)"
+              (touchstart)="pinHigh(pin.value)"
+              (touchend)="pinLow(pin.value)"
+              style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
+              [style.background-color] = "pin.value.mode==='HIGH' ? 'green' : undefined"
+              type="button"
+            >PRESS HIGH</button>
+            <button style="font-size:1.4em;"
+              (mouseup)="pinHigh(pin.value)"
+              (mousedown)="pinLow(pin.value)"
+              (touchstart)="pinLow(pin.value)"
+              (touchend)="pinHigh(pin.value)"
+              style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
+              [style.background-color] = "pin.value.mode==='LOW' ? 'green' : undefined"
+              type="button"
+            >PRESS LOW</button>
+            <button style="font-size:1.4em;" type="button"
+              (click)="pin.details=!pin.details"
+            >info</button>
+            <div *ngIf="pin.details" style="flex-grow:1;">
+              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='LOW' ? 'green' : undefined"
+                (click)="pin.value.mode='LOW';submitPins(pin.value)"
+              >LOW</button>
+              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='HIGH' ? 'green' : undefined"
+                (click)="pin.value.mode='HIGH';submitPins(pin.value)"
+              >HIGH</button>
+              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='LOW'"
+                (click)="pin.value.mode='HIGH';shortPressPin(pin.value)"
+              >short low</button>
+              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='HIGH'"
+                (click)="pin.value.mode='LOW';shortPressPin(pin.value)"
+              >short high</button>
+              <button style="font-size:1.4em;" type="button"
+                (click)="blinkPin(pin.value)" [style.background-color]="pin.value.blink ? 'green' : undefined"
+              >blink</button>
+              <button style="font-size:1.4em;" type="button"
+                (click)="shortPressPin(pin.value)"
+              >short press</button>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>
 
     <div *ngIf="loadCount">... loading {{loadCount}} items ...</div>
-
-    <h2 style="margin-bottom:0;">MESSAGE</h2>
-    <textarea disabled wrap="off" style="width:100%" rows="30">{{wsMessage | json}}</textarea>
 
     <!-- Terminal -->
     <form method="post" (submit)="sendTerminalCommand(terminalCommand)" action="javascript:"  style="width:100%">

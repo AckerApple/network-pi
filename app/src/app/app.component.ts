@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { EMPTY } from 'rxjs';
 
 declare const ws: any
 
@@ -18,8 +17,15 @@ export class AppComponent {
   strobePins: number
 
   config: {
+    debug: boolean
     wsUrl: string
-    pins: {[index: string]: any}
+    pins: {
+      [index: number]: {
+        num  : 0,
+        type : "INPUT" | "OUTPUT"
+        mode : "HIGH" | "LOW"
+      }
+    }
   } = this.loadLocalStorage() || {
     wsUrl, pins: {}
   }
@@ -47,7 +53,7 @@ export class AppComponent {
   connect() {
     this.initSocket()
     this.socketListen()
-    this.saveLocalStorage()
+    this.saveConfig()
   }
 
   initSocket() {
@@ -123,7 +129,7 @@ export class AppComponent {
     return false
   }
 
-  saveLocalStorage() {
+  saveConfig() {
     localStorage.networkPi = JSON.stringify(this.config)
   }
 
@@ -158,6 +164,16 @@ export class AppComponent {
   sendTerminalCommand(command: string) {
     ++this.loadCount
     this.send('command', command)
+  }
+
+  pinHigh(pin: any) {
+    pin.mode = "HIGH"
+    this.submitPins()
+  }
+
+  pinLow(pin: any) {
+    pin.mode = "LOW"
+    this.submitPins()
   }
 
   togglePin(pin: any) {
@@ -198,5 +214,27 @@ export class AppComponent {
       });
 
     }, pinCount * 500)
+  }
+
+  addPin() {
+    let index = -1
+    console.log(Object.keys(this.config.pins))
+    while(++index < 40) {
+      const pinIndex = index.toString()
+      const found = Object.keys(this.config.pins).includes(pinIndex)
+      if (found) {
+        continue
+      }
+
+      this.config.pins[pinIndex] = {
+        num  : pinIndex,
+        type : "INPUT",
+        mode : "LOW"
+      }
+
+      break
+    }
+
+    this.saveConfig()
   }
 }
