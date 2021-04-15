@@ -451,11 +451,11 @@ class AppComponent {
                     this.togglePin(this.config.pins[key]);
                     setTimeout(() => {
                         this.togglePin(this.config.pins[key]);
-                    }, i * 250);
-                }, i * 250);
+                    }, 100);
+                }, i * 100);
             });
             direction = direction ? 0 : 1;
-        }, pinCount * 500);
+        }, pinCount * 200);
     }
     addPin() {
         let index = -1;
