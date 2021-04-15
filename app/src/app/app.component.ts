@@ -207,8 +207,8 @@ export class AppComponent {
     let direction = 1
 
     this.strobePins = setInterval(() => {
-      Object.keys(pinKeys).sort((a,b)=>String((direction ? a : b)||'').toLowerCase()>String((direction ? b : a)||'').toLowerCase()?1:-1)
-      pinKeys.forEach((key,i) => {
+      const orderedKeys = pinKeys.sort((a,b)=>String((direction ? a : b)||'').toLowerCase()>String((direction ? b : a)||'').toLowerCase()?1:-1)
+      orderedKeys.forEach((key,i) => {
         setTimeout(() => {
           this.togglePin(this.config.pins[key])
           setTimeout(() => {
