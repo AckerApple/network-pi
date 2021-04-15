@@ -470,7 +470,7 @@ class AppComponent {
         this.saveConfig();
     }
     deletePin(pin) {
-        const pinNum = pin.num.toString();
+        const pinNum = pin.value;
         console.log('send to remove pin', pinNum);
         delete this.config.pins[pinNum];
         this.submitPins();
