@@ -106,7 +106,10 @@ function setPins( data:pins ){
     setPin( data[x] )
   }
 
-  Object.keys(pins).filter(pin => !data[pin]).forEach(pin => delete pins[pin]);
+  Object.keys(pins).filter(pin => !data[pin]).forEach(pin => {
+    console.log('removed pin', pin)
+    delete pins[pin]
+  });
 }
 
 function setPin( data:pin ){

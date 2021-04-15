@@ -376,7 +376,6 @@ class AppComponent {
         };
     }
     submitPins() {
-        console.log('sending');
         ++this.loadCount;
         this.send('setPins', this.config.pins);
         return false;
@@ -471,7 +470,7 @@ class AppComponent {
         this.saveConfig();
     }
     deletePin(pin) {
-        this.config.pins[pin.num];
+        delete this.config.pins[pin.num];
         this.submitPins();
     }
 }
