@@ -237,4 +237,9 @@ export class AppComponent {
 
     this.saveConfig()
   }
+
+  deletePin(pin: {num: string, details: string}) {
+    this.config.pins[pin.num]
+    this.submitPins()
+  }
 }
