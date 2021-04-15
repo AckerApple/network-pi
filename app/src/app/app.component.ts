@@ -238,7 +238,9 @@ export class AppComponent {
   }
 
   deletePin(pin: {num: string, details: string}) {
-    delete this.config.pins[pin.num]
+    const pinNum = pin.num.toString()
+    console.log('send to remove pin', pinNum)
+    delete this.config.pins[pinNum]
     this.submitPins()
   }
 }
