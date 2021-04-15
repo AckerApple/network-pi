@@ -11,7 +11,7 @@ export interface WsMessage {
 
 export const wss = new WebSocket.Server({noServer: true})
 
-export interface pins{
+export interface pins {
   [index:number] : pin
 }
 
@@ -24,8 +24,8 @@ const pinst = pi( isPiPlatform )
 const pins:pins = {
   "0":{
     "num"  : 0,
-    "type" : "OUTPUT",
-    "mode" : "LOW"
+    "type" : "INPUT", // OUTPUT
+    // "mode" : "LOW"
   },
   "1":{
     "num"  : 1,
@@ -56,6 +56,7 @@ async function onConnect(ws) {
         case 'getPins': 'pins'
           // console.log('getting pins')
           send('pins', pins)
+          console.log(pins)
           break;
 
         case 'command':
@@ -104,6 +105,8 @@ function setPins( data:pins ){
     // data[x].num = x as any
     setPin( data[x] )
   }
+
+  Object.keys(pins).filter(pin => !data[pin]).forEach(pin => delete pins[pin]);
 }
 
 function setPin( data:pin ){

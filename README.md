@@ -3,9 +3,23 @@ Acker testing platform for pi controlled over the network
 
 ### PreInstall
 
+Do you need nvm as you need to use older versions of Node at this time
+```
+nvm install 10.13.0 && nvm use 10.13.0
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+```
+
+GPIO pin controller
+```
+sudo apt-get install wiringpi
+
+npm install node-wiring-pi
+```
+
+Optional sometimes helpful install
 ```
 npm install --global --production windows-build-tools
-npm install node-wiring-pi
 ```
 
 Ensure node is accessible to sudo via `sudo node`. If not use the following commands:
@@ -28,6 +42,13 @@ You may need to install `node-wiring-pi` manually
 
 > The original package, wiringpi-node, is outdated and no longer recommended
 
+### Restart
+
+If you encounter error that ports are already in use:
+```
+killall -9 npm
+killall -9 node
+```
 
 ### Reinstall
 
