@@ -1,27 +1,14 @@
 import * as WebSocket from "ws"
 import * as os from "os"
-import { pin, pi, Pin, InputPin, OutputPin } from "ack-pi"
+import { pin, pi, InputPin, OutputPin } from "ack-pi"
+import { eventTypes, pinClasses, ServerPinsSummary, WsMessage } from "../shared/types";
 const { exec } = require("child_process");
-
-export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'command-result'
-export interface WsMessage {
-  [index:string]: any
-  eventType: eventTypes
-}
 
 export const wss = new WebSocket.Server({noServer: true})
 
-export interface pins {
-  [index:number] : pin
-}
-
-export interface pinClasses{
-  [index:number]:InputPin|OutputPin|Pin
-}
-
 const isPiPlatform = os.platform()==="linux"
-const pinst = pi( isPiPlatform )
-const pins:pins = {
+const piPins = pi( isPiPlatform )
+const pins: ServerPinsSummary = {
   "0":{
     "num"  : 0,
     "type" : "INPUT", // OUTPUT
@@ -35,54 +22,74 @@ const pins:pins = {
 }
 const pinClasses:pinClasses = {}
 
-wss.on('connection', onConnect)
-wss.on('open', (ws) => console.log('opened'))
+export class ConnectionSwitch {
+  constructor(public ws: WebSocket.connection) {
+    console.log('connected')
+    ws.on('message', (dataString:string) => this.onMessage(dataString))
+  }
 
-async function onConnect(ws) {
-  console.log('connected')
-  ws.on('message', onMessage)
-
-  async function onMessage(dataString:string) {
+  async onMessage(dataString: string) {
     try{
       const data: WsMessage = JSON.parse( dataString )
-
-      switch (data.eventType) {
-        case 'setPins':
-          // console.log('dataString', typeof dataString, typeof data, typeof data.data, data)
-          setPins( data.data );
-          send('pins', pins)
-          break;
-
-        case 'getPins': 'pins'
-          // console.log('getting pins')
-          send('pins', pins)
-          console.log(pins)
-          break;
-
-        case 'command':
-          send('command-result', await runCommand(data.data))
-          break;
-
-        default:
-          send('log', {
-            message: `received unknown command ${data.eventType}`,
-            data
-          })
-      }
-
+      this.processEvent(data.eventType, data)
     }catch(e){
       console.error(e)
       return
     }
   }
 
-  function send(eventType: eventTypes, data: any) {
-    ws.send( JSON.stringify({
-      eventType, data
-    }))
+  async processEvent(
+    eventType: string, data: WsMessage
+  ): Promise<void> {
+    switch (data.eventType) {
+      case 'setPins':
+        // console.log('dataString', typeof dataString, typeof data, typeof data.data, data)
+        setPins( data.data );
+        this.send('pins', pins, data) // echo
+        break;
+
+      case 'getPins': 'pins'
+        this.send('pins', pins, data)
+        break;
+
+      case 'command':
+        this.send('command-result', await runCommand(data.data), data)
+        break;
+
+      default:
+        this.send('log', {
+          message: `received unknown command ${data.eventType}`, data
+        }, data)
+     }
+   }
+
+   send(eventType: eventTypes, data: any, responseTo?: WsMessage) {
+    const message: WsMessage = {eventType, data}
+
+    if (responseTo?.responseId) {
+      message.responseId = responseTo.responseId
+    }
+
+    this.ws.send( JSON.stringify(message))
   }
 }
 
+export class WssSwitch {
+  constructor(public wss: WebSocket.Server) {
+    wss.on('connection', ws => this.onConnect(ws))
+    wss.on('open', (ws) => console.log('opened'))
+  }
+
+  async onConnect(ws: WebSocket.connection) {
+    return this.getNewConnectionSwitch(ws)
+  }
+
+  getNewConnectionSwitch(ws: WebSocket.connection) {
+    return new ConnectionSwitch(ws)
+  }
+}
+
+/** browser debug any sent command */
 function runCommand(command: string) {
   return new Promise((res, rej) => {
     exec(command, (error, stdout, stderr) => {
@@ -98,7 +105,7 @@ function runCommand(command: string) {
   })
 }
 
-function setPins( data:pins ){
+function setPins( data: ServerPinsSummary ){
   // console.log('data', typeof data, data)
   for(let x in data){
     data[x].num = Number( <any>x )
@@ -112,13 +119,19 @@ function setPins( data:pins ){
   });
 }
 
-function setPin( data:pin ){
+function setPin(data: pin){
   const isInput = data.type === 'INPUT'
   const isOutput = data.type === 'OUTPUT'
 
-  //apply pin type change
+  // apply pin type change
   if( !pinClasses[data.num] || pinClasses[data.num].type!==data.type ){
-    pinClasses[data.num] = isInput ? pinst.input( data.num ) : pinst.output( data.num )
+    pinClasses[data.num] = isInput ? piPins.input( data.num ) : piPins.output( data.num )
+  }
+
+  const pin = pins[ data.num ]
+  const already = isPinStateMatched(data, pin)
+  if (already) {
+    return // no work to do its already this way
   }
 
   pins[ data.num ] = data
@@ -129,14 +142,18 @@ function setPin( data:pin ){
   }
 
   if (isInput) {
-    console.log('set input pin', data)
-    setInputPin(pinClasses[data.num] as InputPin, data)
+    // console.log('set input pin', data)
+    return setInputPin(pinClasses[data.num] as InputPin, data)
   } else if (isOutput) {
-    console.log('set output pin', data)
-    setOutputPin(pinClasses[data.num] as OutputPin, data)
-  } else {
-    console.log('set pin', data)
+    // console.log('set output pin', data)
+    return setOutputPin(pinClasses[data.num] as OutputPin, data)
   }
+
+  console.log('set pin', data)
+}
+
+function isPinStateMatched(pin: pin, matchPin: pin) {
+  return pin && matchPin && pin.type === matchPin.type && pin.mode === matchPin.mode
 }
 
 function setInputPin(pinClass: InputPin, data: pin) {

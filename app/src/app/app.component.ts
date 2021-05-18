@@ -1,3 +1,4 @@
+import { eventTypes, PinState, ServerPinsSummary, WsMessage } from "../../../shared/types";
 import { Component } from '@angular/core';
 
 declare const ws: any
@@ -7,7 +8,23 @@ const forcePort = urlParams.get('port')
 const forceHost = urlParams.get('host')
 const port = window.location.port || forcePort || 3000
 const hostPath = window.location.hostname + ':' + port
-const wsUrl = 'ws://' + hostPath +'/foo'
+const wsUrl = 'ws://' + hostPath +'/ws'
+
+interface PinConfig {
+  num  : 0,
+  state: PinState,
+  request: PinState
+  blink: number
+}
+
+interface Config {
+  wsUrl: string
+  debug?: boolean
+  pins: {
+    [index: number]: PinConfig
+  }
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -16,17 +33,7 @@ const wsUrl = 'ws://' + hostPath +'/foo'
 export class AppComponent {
   strobePins: number
 
-  config: {
-    debug: boolean
-    wsUrl: string
-    pins: {
-      [index: number]: {
-        num  : 0,
-        type : "INPUT" | "OUTPUT"
-        mode : "HIGH" | "LOW"
-      }
-    }
-  } = this.loadLocalStorage() || {
+  config: Config = this.loadLocalStorage() || {
     wsUrl, pins: {}
   }
 
@@ -36,8 +43,14 @@ export class AppComponent {
   terminalCommand: string
   commandResult: string
 
-  wsMessage: any
+  wsMessage: WsMessage
   ws: WebSocket
+  disconnectAsked: boolean
+  reconnectTimer: number
+
+  promises: {
+    [id: string]: {res: (data: WsMessage) => any, rej: () => any}
+  } = {}
 
   constructor() {
     console.log('starting')
@@ -51,37 +64,65 @@ export class AppComponent {
   }
 
   connect() {
+    if (this.ws) {
+      console.warn('web socket server already connected')
+      return
+    }
+
     this.initSocket()
     this.socketListen()
     this.saveConfig()
   }
 
   initSocket() {
-    console.log('starting', this.config.wsUrl)
-    this.ws = new WebSocket( this.config.wsUrl );
+    this.ws = new WebSocket( this.config.wsUrl )
   }
 
   disconnect() {
+    this.disconnectAsked = true
     this.ws.close()
     delete this.ws
   }
 
-  send(eventType:string, data?: any) {
-    this.ws.send(JSON.stringify({
-      eventType, data
-    }))
+  reconnect() {
+    this.disconnect()
+    this.connect()
+  }
+
+  send(eventType: eventTypes, data?: any) {
+    this.ws.send(JSON.stringify({eventType, data}))
   }
 
   reloadPins() {
     ++this.loadCount
-    this.send('getPins')
+    this.sendWaitResponse<ServerPinsSummary>('getPins')
+      .then(data => {
+        --this.loadCount
+        this.setPinsByResponse(data)
+      })
   }
 
   socketListen() {
     const pins = {}
     // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
 
+    this.ws.onclose = () => {
+      delete this.ws
+
+      if (!this.disconnectAsked) {
+        console.log('Server closed unexpectedly. Attempting to reconnect')
+        this.reconnectTimer = setInterval(() => {
+          console.log('attempting reconnect')
+          this.connect()
+        }, 5000)
+        return
+      }
+
+      delete this.disconnectAsked
+    }
+
     this.ws.onopen = () => {
+      clearInterval(this.reconnectTimer)
       console.log('websocket is connected ...')
       this.reloadPins()
       /*
@@ -96,36 +137,76 @@ export class AppComponent {
     this.ws.onmessage = ev => {
       const data = JSON.parse(ev.data)
       this.wsMessage = data
-
-      switch (data.eventType) {
-        case 'log':
-          this.wsMessage = data.data
-          break
-
-        case 'command-result':
-          --this.loadCount
-          this.commandResult = data.data
-          break
-
-        case 'pins':
-          --this.loadCount
-          Object.keys(data.data).forEach(key => {
-            this.config.pins[key] = this.config.pins[key] || {}
-            Object.assign(this.config.pins[key], data.data[key])
-          });
-          // this.pins = data.data // JSON.stringify(data, null, 2)
-          break;
-
-        default:
-          this.wsMessage = data
-      }
+      this.handleWsMessage(data)
     }
+  }
+
+  handleWsMessage(data: WsMessage) {
+    // someone waiting for a response?
+    if(data.responseId && this.promises[data.responseId]) {
+      const handler = this.promises[data.responseId]
+      delete this.promises[data.responseId]
+      return handler.res(data.data)
+    }
+
+    switch (data.eventType) {
+      case 'log':
+        this.wsMessage = data.data
+        break
+
+      case 'command-result':
+        --this.loadCount
+        this.commandResult = data.data
+        break
+
+      case 'pins':
+        --this.loadCount
+        this.setPinsByResponse(data.data)
+        // this.pins = data.data // JSON.stringify(data, null, 2)
+        break;
+
+      default:
+        this.wsMessage = data
+    }
+  }
+
+  setPinsByResponse(data: ServerPinsSummary) {
+    Object.keys(data).forEach(key => {
+      this.config.pins[key] = this.config.pins[key] || {
+        num: key, request: {}, state: {}
+      }
+
+      Object.assign(this.config.pins[key].state, data[key])
+    })
   }
 
   submitPins(){
     ++this.loadCount
-    this.send('setPins', this.config.pins)
+    const pins: ServerPinsSummary = {}
+
+    Object.keys(this.config.pins).forEach(key => {
+      pins[key] = {
+        num: key, ...this.config.pins[key].request
+      }
+    })
+
+    this.send('setPins', pins)
     return false
+  }
+
+  sendWaitResponse<T>(eventType: eventTypes, data?: any): Promise<T>{
+    const message = {eventType, data}
+    return this.sendWaitMessageResponse<T>(message)
+  }
+
+  sendWaitMessageResponse<T>(message: WsMessage): Promise<T>{
+    const id = Date.now() + '-' + this.loadCount
+    message.responseId = id
+    return new Promise((res, rej) =>{
+      const obj = {res, rej}
+      this.promises[id] = obj as any // prevent type checking `res`
+      this.ws.send(JSON.stringify(message))
+    })
   }
 
   saveConfig() {
@@ -135,7 +216,15 @@ export class AppComponent {
   loadLocalStorage() {
     try {
       const localValues = localStorage.networkPi
-      return this.config = JSON.parse(localValues) || this.config
+      const config: Config = JSON.parse(localValues) || this.config
+
+      Object.keys(config.pins).forEach(pinId => {
+        const pin: PinConfig = config.pins[pinId]
+        pin.request = pin.request || {type: 'INPUT'}
+        pin.state = pin.state || {type: 'INPUT'}
+      });
+
+      return this.config = config
     } catch (err) {
       console.error('unable to load past settings', err)
     }
@@ -144,12 +233,13 @@ export class AppComponent {
   setPinsByString(pins: string) {
     const newPins = JSON.parse(pins)
     this.config.pins = newPins
+    this.saveConfig()
   }
 
-  blinkPin(pin: any) {
+  blinkPin(pin: PinConfig) {
     if (pin.blink) {
       clearInterval(pin.blink)
-      pin.mode = 'LOW'
+      pin.request.mode = 'LOW'
       delete pin.blink
       this.submitPins()
       return
@@ -165,25 +255,25 @@ export class AppComponent {
     this.send('command', command)
   }
 
-  pinHigh(pin: any) {
-    pin.mode = "HIGH"
+  pinHigh(pin: PinConfig) {
+    pin.request.mode = "HIGH"
     this.submitPins()
   }
 
-  pinLow(pin: any) {
-    pin.mode = "LOW"
+  pinLow(pin: PinConfig) {
+    pin.request.mode = "LOW"
     this.submitPins()
   }
 
-  togglePin(pin: any) {
-    const orgMode = pin.mode === 'HIGH' ? 'HIGH' : 'LOW'
+  togglePin(pin: PinConfig) {
+    const orgMode = pin.request.mode === 'HIGH' ? 'HIGH' : 'LOW'
     const newMode = orgMode === 'HIGH' ? 'LOW' : 'HIGH'
 
-    pin.mode = newMode
+    pin.request.mode = newMode
     this.submitPins()
   }
 
-  shortPressPin(pin: any) {
+  shortPressPin(pin: PinConfig) {
     this.togglePin(pin)
 
     setTimeout(() => {

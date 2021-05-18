@@ -316,7 +316,12 @@
           (change)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125"
           placeholder="Web Socket URL"
         />
-        <button style="background-color: red;" *ngIf="ws" type="submit" (click)="disconnect()">disconnect</button>
+        <button style="background-color: red;" *ngIf="ws" type="button"
+          (click)="disconnect()"
+        >disconnect</button>
+        <button style="background-color: orange;" *ngIf="ws" type="button"
+          (click)="reconnect()"
+        >reconnect</button>
         <button *ngIf="!ws" type="submit">connect</button>
       </form>
     </div>
@@ -348,7 +353,8 @@
         >DEBUG</button>
         <button type="button" (click)="reloadPins()" style="flex-grow:1;"
         >REFRESH PINS</button>
-        <button type="button" [style.background-color]="strobePins ? 'green' : null" (click)="toggleStrobePins()" style="flex-grow:1;"
+        <button type="button" [style.background-color]="strobePins ? 'green' : null"
+          (click)="toggleStrobePins()" style="flex-grow:1;"
         >STROBE PINS</button>
         <button type="button" style="flex-grow:1;" (click)="addPin()"
         >ADD PIN</button>
@@ -362,16 +368,16 @@
         <div style="display:flex;margin:1em;">
           <div style="font-size:1.4em;">pin: {{pin.key}}</div>
           <button style="font-size:1.4em;" type="button"
-            (click)="pin.value.type = pin.value.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
-          >{{pin.value.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
-          <ng-container *ngIf="pin.value.type === 'OUTPUT'">
+            (click)="pin.value.request.type = pin.value.request.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
+          >{{pin.value.request?.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
+          <ng-container *ngIf="pin.value.request.type === 'OUTPUT'">
             <button style="font-size:1.4em;"
               (mouseup)="pinLow(pin.value)"
               (mousedown)="pinHigh(pin.value)"
               (touchstart)="pinHigh(pin.value)"
               (touchend)="pinLow(pin.value)"
               style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
-              [style.background-color] = "pin.value.mode==='HIGH' ? 'green' : undefined"
+              [style.background-color] = "pin.value.request.mode==='HIGH' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
               type="button"
             >PRESS HIGH</button>
             <button style="font-size:1.4em;"
@@ -380,7 +386,7 @@
               (touchstart)="pinLow(pin.value)"
               (touchend)="pinHigh(pin.value)"
               style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
-              [style.background-color] = "pin.value.mode==='LOW' ? 'green' : undefined"
+              [style.background-color] = "pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
               type="button"
             >PRESS LOW</button>
             <button style="font-size:1.4em;" type="button"
@@ -390,17 +396,17 @@
               (click)="deletePin(pin)"
             >🗑️</button>
             <div *ngIf="pin.details" style="flex-grow:1;">
-              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='LOW' ? 'green' : undefined"
-                (click)="pin.value.mode='LOW';submitPins(pin.value)"
+              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
+                (click)="pin.value.request.mode='LOW';submitPins(pin.value)"
               >LOW</button>
-              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.mode==='HIGH' ? 'green' : undefined"
-                (click)="pin.value.mode='HIGH';submitPins(pin.value)"
+              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='HIGH' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
+                (click)="pin.value.request.mode='HIGH';submitPins(pin.value)"
               >HIGH</button>
-              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='LOW'"
-                (click)="pin.value.mode='HIGH';shortPressPin(pin.value)"
+              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.request.mode==='LOW'"
+                (click)="pin.value.request.mode='HIGH';shortPressPin(pin.value)"
               >short low</button>
-              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.mode==='HIGH'"
-                (click)="pin.value.mode='LOW';shortPressPin(pin.value)"
+              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.request.mode==='HIGH'"
+                (click)="pin.value.request.mode='LOW';shortPressPin(pin.value)"
               >short high</button>
               <button style="font-size:1.4em;" type="button"
                 (click)="blinkPin(pin.value)" [style.background-color]="pin.value.blink ? 'green' : undefined"

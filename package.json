@@ -19,7 +19,7 @@
     "start:server:watch": "ts-node-dev server/index",
     "start:server:watch:pi": "host=0.0.0.0 npm run start:server:watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "npm-run-all --parallel start:webapp start:server:watch",
+    "watch": "npm-run-all --parallel start:webapp:ng start:server:watch",
     "watch:pi": "npm-run-all --parallel start:webapp:pi start:server:watch:pi",
     "postinstall": "cd app && npm install"
   },

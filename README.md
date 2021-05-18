@@ -56,3 +56,15 @@ killall -9 node
 nvm install 10.13.0 && nvm use 10.13.0
 rm -rf node_modules && rm -f package-lock.json && npm install node-wiring-pi && npm install && npm run start:server:pi
 ```
+
+### Wifi
+
+Edit wifi within `sudo nano /etc/wpa_supplicant/wpa_supplicant.conf`
+
+Example wifi entry
+```
+network={
+    ssid="wifi name"
+    psk="wifi password"
+}
+```

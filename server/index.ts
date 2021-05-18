@@ -32,38 +32,24 @@ const server = http.createServer((req,res)=>{
     query : url.parse(req.url, true).query
   }
 
-  //console.log("urlParts", rUrl)
   file.serve(req, res);
-  /*
-  if( rUrl.path==='/' ){
-    res.writeHead(200, {"Content-Type": "text/html"})
-    return res.end( 'no index' )
-    //return res.end( index )
-  }
-
-  res.writeHead(404, {"Content-Type": "text/plain"})
-  res.end("404 - page not found")
-  */
 })
 
-server.on('upgrade', function upgrade(request, socket, head) {
+server.on('upgrade', addWsToHttpServer)
+
+function addWsToHttpServer(request, socket, head) {
   console.log('starting websocket')
   const pathname = url.parse(request.url).pathname;
 
-  if (pathname === '/foo') {
+  if (pathname === '/ws') {
     wss.handleUpgrade(request, socket, head, function done(ws) {
-      console.log('connection foo')
-      wss.emit('connection', ws, request)
-    });
-  } else if (pathname === '/bar') {
-    wss.handleUpgrade(request, socket, head, function done(ws) {
-      console.log('connection bar')
+      console.log('ws connection created on path /ws')
       wss.emit('connection', ws, request)
     });
   } else {
     socket.destroy()
   }
-})
+}
 
 server.listen(port, host, ()=>{
   console.log(`server started - ${host || 'localhost'}:${port}`)
