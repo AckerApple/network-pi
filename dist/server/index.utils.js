@@ -1,10 +1,13 @@
-import { __awaiter } from "tslib";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ConnectionSwitch = exports.upgradeHttpServerToWebSocket = exports.addWebSocketToHttpServer = exports.startHttpWebSocketServer = void 0;
+const tslib_1 = require("tslib");
 const nodeStatic = require('node-static');
-import * as WebSocket from "ws";
-import * as http from "http";
-import * as url from "url";
-import { Subject } from "rxjs";
-export function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePath }) {
+const WebSocket = require("ws");
+const http = require("http");
+const url = require("url");
+const rxjs_1 = require("rxjs");
+function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePath }) {
     console.log('serving static files from', httpStaticFilePath);
     var file = new (nodeStatic.Server)(httpStaticFilePath);
     const server = http.createServer((req, res) => {
@@ -21,7 +24,8 @@ export function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpSt
     });
     return { http: server, wss };
 }
-export function addWebSocketToHttpServer(server) {
+exports.startHttpWebSocketServer = startHttpWebSocketServer;
+function addWebSocketToHttpServer(server) {
     console.log('upgrading http server...');
     const wss = new WebSocket.Server({ noServer: true });
     server.on('upgrade', (request, socket, head) => {
@@ -30,7 +34,8 @@ export function addWebSocketToHttpServer(server) {
     });
     return wss;
 }
-export function upgradeHttpServerToWebSocket(request, socket, head, wss) {
+exports.addWebSocketToHttpServer = addWebSocketToHttpServer;
+function upgradeHttpServerToWebSocket(request, socket, head, wss) {
     console.log('starting websocket server...');
     const pathname = url.parse(request.url).pathname;
     if (pathname === '/ws') {
@@ -43,15 +48,16 @@ export function upgradeHttpServerToWebSocket(request, socket, head, wss) {
         socket.destroy();
     }
 }
-export class ConnectionSwitch {
+exports.upgradeHttpServerToWebSocket = upgradeHttpServerToWebSocket;
+class ConnectionSwitch {
     constructor(ws) {
         this.ws = ws;
-        this.$message = new Subject();
+        this.$message = new rxjs_1.Subject();
         console.log('connected');
         ws.on('message', (dataString) => this.onMessage(dataString));
     }
     onMessage(dataString) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 const data = JSON.parse(dataString);
                 this.$message.next(data);
@@ -64,7 +70,7 @@ export class ConnectionSwitch {
         });
     }
     processEvent(eventType, data) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (!this[data.eventType]) {
                 const message = `received unknown command ${data.eventType}`;
                 console.warn('unknown', message);
@@ -91,4 +97,5 @@ export class ConnectionSwitch {
         this.ws.send(JSON.stringify(message));
     }
 }
+exports.ConnectionSwitch = ConnectionSwitch;
 //# sourceMappingURL=index.utils.js.map

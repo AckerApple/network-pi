@@ -1,9 +1,12 @@
-import { __awaiter } from "tslib";
-import * as os from "os";
-import { pi } from "ack-pi";
-import { ConnectionSwitch } from "./index.utils";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.WsPinConnectionSwitch = void 0;
+const tslib_1 = require("tslib");
+const os = require("os");
+const ack_pi_1 = require("ack-pi");
+const index_utils_1 = require("./index.utils");
 const { exec } = require("child_process");
-export class WsPinConnectionSwitch extends ConnectionSwitch {
+class WsPinConnectionSwitch extends index_utils_1.ConnectionSwitch {
     setPins(data) {
         setPins(data.data);
         this.send('pins', pins, data); // echo
@@ -12,13 +15,14 @@ export class WsPinConnectionSwitch extends ConnectionSwitch {
         this.send('pins', pins, data);
     }
     command(data) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.send('commandResult', yield runCommand(data.data), data);
         });
     }
 }
+exports.WsPinConnectionSwitch = WsPinConnectionSwitch;
 const isPiPlatform = os.platform() === "linux";
-const piPins = pi(isPiPlatform);
+const piPins = ack_pi_1.pi(isPiPlatform);
 const pins = {
     "0": {
         "num": 0,
