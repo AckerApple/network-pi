@@ -2,7 +2,7 @@ import { WsMessage } from "./types";
 import { Subject } from "rxjs";
 
 export class WsEventCommunicator {
-  reconnectTimer: number
+  reconnectTimer: any
   disconnectAsked!: boolean
   lastMessage!: WsMessage
 
