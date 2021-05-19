@@ -1,5 +1,7 @@
 import { eventTypes, PinState, ServerPinsSummary, WsMessage } from "../../../shared/types";
+import { WsEventCommunicator } from "../../../shared/WsEventCommunicator.class";
 import { Component } from '@angular/core';
+import { Subscription } from "rxjs";
 
 declare const ws: any
 
@@ -31,26 +33,20 @@ interface Config {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  subs = new Subscription()
   strobePins: number
 
   config: Config = this.loadLocalStorage() || {
     wsUrl, pins: {}
   }
 
+  wsComm: WsEventCommunicator = new WsEventCommunicator(this.config.wsUrl)
+
   loadCount = 0
   title = 'network-pi-webapp';
 
   terminalCommand: string
   commandResultData: string
-
-  wsMessage: WsMessage
-  ws: WebSocket
-  disconnectAsked: boolean
-  reconnectTimer: number
-
-  promises: {
-    [id: string]: {res: (data: WsMessage) => any, rej: () => any}
-  } = {}
 
   constructor() {
     console.log('starting')
@@ -59,41 +55,23 @@ export class AppComponent {
       this.config.wsUrl = wsUrl
     }
 
+    this.subs.add(
+      this.wsComm.$onopen.subscribe(() => this.reloadPins())
+    ).add(
+      this.wsComm.$onmessage.subscribe(data => this.handleWsMessage(data))
+    )
+
     this.config.pins = this.config.pins || {}
-    this.connect()
+    this.wsComm.connect()
   }
 
-  connect() {
-    console.log('making ws connection...')
-    if (this.ws) {
-      console.warn('web socket server already connected')
-      return
-    }
-
-    delete this.disconnectAsked
-
-    this.initSocket()
-    this.socketListen()
-    this.saveConfig()
+  updateWsUrl(url: string) {
+    this.wsComm.url = url
+    this.config.wsUrl = url
   }
 
-  initSocket() {
-    this.ws = new WebSocket( this.config.wsUrl )
-  }
-
-  disconnect() {
-    this.disconnectAsked = true
-    this.ws.close()
-    delete this.ws
-  }
-
-  reconnect() {
-    this.disconnect()
-    this.connect()
-  }
-
-  send(eventType: eventTypes, data?: any) {
-    this.ws.send(JSON.stringify({eventType, data}))
+  ngOnDestroy() {
+    this.subs.unsubscribe()
   }
 
   reloadPins() {
@@ -105,56 +83,13 @@ export class AppComponent {
       })
   }
 
-  socketListen() {
-    const pins = {}
-    // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
-
-    this.ws.onclose = () => {
-      delete this.ws
-
-      if (!this.disconnectAsked) {
-        console.log('Server closed unexpectedly. Attempting to reconnect')
-        this.reconnectTimer = setInterval(() => {
-          console.log('attempting reconnect')
-          this.connect()
-        }, 5000)
-        return
-      }
-
-      delete this.disconnectAsked
-    }
-
-    this.ws.onopen = () => {
-      clearInterval(this.reconnectTimer)
-      console.log('websocket is connected')
-      this.reloadPins()
-    }
-
-    this.ws.onmessage = ev => {
-      const data = JSON.parse(ev.data)
-      this.wsMessage = data
-      this.handleWsMessage(data)
-    }
-  }
-
   handleWsMessage(data: WsMessage) {
-    // someone waiting for a response?
-    if(data.responseId && this.promises[data.responseId]) {
-      const handler = this.promises[data.responseId]
-      delete this.promises[data.responseId]
-      return handler.res(data.data)
-    }
-
     if(!this[data.eventType]) {
       console.warn(`unknown ws message of type ${data.eventType}`)
-      return this.wsMessage = data
+      return data
     }
 
     this[data.eventType].call(this, data.data)
-  }
-
-  log(data: any) {
-    this.wsMessage = data.data
   }
 
   commandResult(data: any) {
@@ -193,18 +128,7 @@ export class AppComponent {
   }
 
   sendWaitResponse<T>(eventType: eventTypes, data?: any): Promise<T>{
-    const message = {eventType, data}
-    return this.sendWaitMessageResponse<T>(message)
-  }
-
-  sendWaitMessageResponse<T>(message: WsMessage): Promise<T>{
-    const id = Date.now() + '-' + this.loadCount
-    message.responseId = id
-    return new Promise((res, rej) =>{
-      const obj = {res, rej}
-      this.promises[id] = obj as any // prevent type checking `res`
-      this.ws.send(JSON.stringify(message))
-    })
+    return this.wsComm.sendWaitResponse(eventType, data)
   }
 
   saveConfig() {
@@ -340,5 +264,9 @@ export class AppComponent {
     console.log('send to remove pin', pinNum)
     delete this.config.pins[pinNum]
     this.submitPins()
+  }
+
+  send(eventType: eventTypes, data?: any) {
+    this.wsComm.send(eventType, data)
   }
 }

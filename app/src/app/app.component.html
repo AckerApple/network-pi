@@ -304,31 +304,31 @@
         </g>
       </svg>
 
-      <span>{{ title }} app is {{ ws ? 'connected' : 'disconnected' }}!</span>
+      <span>{{ title }} app is {{ wsComm.ws ? 'connected' : 'disconnected' }}!</span>
 
       <svg id="rocket-smoke" alt="Rocket Ship Smoke" xmlns="http://www.w3.org/2000/svg" width="516.119" height="1083.632" viewBox="0 0 516.119 1083.632">
         <path id="Path_40" data-name="Path 40" d="M644.6,141S143.02,215.537,147.049,870.207s342.774,201.755,342.774,201.755S404.659,847.213,388.815,762.2c-27.116-145.51-11.551-384.124,271.9-609.1C671.15,139.365,644.6,141,644.6,141Z" transform="translate(-147.025 -140.939)" fill="#f5f5f5"/>
       </svg>
     </div>
     <div>
-      <form method="post" (submit)="connect();saveConfig()" action="javascript:">
-        <input *ngIf="!ws" type="text"
+      <form method="post" (submit)="wsComm.connect();saveConfig()" action="javascript:">
+        <input *ngIf="!wsComm.ws" type="text"
           (change)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125"
           placeholder="Web Socket URL"
         />
-        <button style="background-color: red;" *ngIf="ws" type="button"
+        <button style="background-color: red;" *ngIf="wsComm.ws" type="button"
           (click)="disconnect()"
         >disconnect</button>
-        <button style="background-color: orange;" *ngIf="ws" type="button"
+        <button style="background-color: orange;" *ngIf="wsComm.ws" type="button"
           (click)="reconnect()"
         >reconnect</button>
-        <button *ngIf="!ws" type="submit">connect</button>
+        <button *ngIf="!wsComm.ws" type="submit">connect</button>
       </form>
     </div>
   </div>
   <br /><br />
 
-  <ng-container *ngIf="ws">
+  <ng-container *ngIf="wsComm.ws">
     <form (submit)="submitPins()" action="javascript:" style="display: block;width: 100%;">
       <div *ngIf="config.debug" style="display: flex;flex-wrap:wrap">
         <div style="flex-grow:1;margin:.3em;">
@@ -343,7 +343,7 @@
         <div style="flex-grow:1;margin:.3em;">
           <h3 style="margin-bottom:0;">MESSAGES</h3>
           <div style="width: 100%;display:flex;">
-            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wsMessage | json}}</textarea>
+            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wsComm.lastMessage | json}}</textarea>
           </div>
         </div>
       </div>
