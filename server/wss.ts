@@ -16,7 +16,7 @@ export class WsPinConnectionSwitch extends ConnectionSwitch {
   }
 
   async command(data: WsMessage) {
-    this.send('command-result', await runCommand(data.data), data)
+    this.send('commandResult', await runCommand(data.data), data)
   }
 }
 

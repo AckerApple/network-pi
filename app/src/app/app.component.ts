@@ -41,7 +41,7 @@ export class AppComponent {
   title = 'network-pi-webapp';
 
   terminalCommand: string
-  commandResult: string
+  commandResultData: string
 
   wsMessage: WsMessage
   ws: WebSocket
@@ -69,6 +69,8 @@ export class AppComponent {
       console.warn('web socket server already connected')
       return
     }
+
+    delete this.disconnectAsked
 
     this.initSocket()
     this.socketListen()
@@ -126,13 +128,6 @@ export class AppComponent {
       clearInterval(this.reconnectTimer)
       console.log('websocket is connected')
       this.reloadPins()
-      /*
-        ws.send(JSON.stringify(pin0))
-        setInterval(function(){
-        pin0.mode = pin0.mode==='low' ? 'high' : 'low'
-        ws.send(JSON.stringify(pin0))
-        }, 1000)
-      */
     }
 
     this.ws.onmessage = ev => {
@@ -150,28 +145,30 @@ export class AppComponent {
       return handler.res(data.data)
     }
 
-    switch (data.eventType) {
-      case 'log':
-        this.wsMessage = data.data
-        break
-
-      case 'command-result':
-        --this.loadCount
-        this.commandResult = data.data
-        break
-
-      case 'pins':
-        --this.loadCount
-        this.setPinsByResponse(data.data)
-        // this.pins = data.data // JSON.stringify(data, null, 2)
-        break;
-
-      default:
-        this.wsMessage = data
+    if(!this[data.eventType]) {
+      console.warn(`unknown ws message of type ${data.eventType}`)
+      return this.wsMessage = data
     }
+
+    this[data.eventType].call(this, data.data)
+  }
+
+  log(data: any) {
+    this.wsMessage = data.data
+  }
+
+  commandResult(data: any) {
+    --this.loadCount
+    this.commandResultData = data
+  }
+
+  pins(data: any) {
+    --this.loadCount
+    this.setPinsByResponse(data)
   }
 
   setPinsByResponse(data: ServerPinsSummary) {
+    console.log('data', data)
     Object.keys(data).forEach(key => {
       this.config.pins[key] = this.config.pins[key] || {
         num: key, request: {}, state: {}
@@ -328,7 +325,8 @@ export class AppComponent {
       this.config.pins[pinIndex] = {
         num  : pinIndex,
         type : "INPUT",
-        mode : "LOW"
+        mode : "LOW",
+        request: {},
       }
 
       break

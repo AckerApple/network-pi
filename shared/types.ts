@@ -1,6 +1,6 @@
 import { pin, Pin, InputPin, OutputPin } from "ack-pi"
 
-export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'command-result'
+export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'commandResult'
 export interface WsMessage {
   responseId?: string
   eventType: string // eventTypes

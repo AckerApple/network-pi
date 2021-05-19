@@ -213,7 +213,7 @@ function AppComponent_ng_container_32_div_15_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "button", 44);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_ng_container_32_div_15_Template_button_click_4_listener() { const pin_r16 = ctx.$implicit; return pin_r16.value.request.type = pin_r16.value.request.type === "INPUT" ? "OUTPUT" : "INPUT"; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_ng_container_32_div_15_Template_button_click_4_listener() { const pin_r16 = ctx.$implicit; return pin_r16.value.request.type = (pin_r16.value.request == null ? null : pin_r16.value.request.type) === "INPUT" ? "OUTPUT" : "INPUT"; });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, AppComponent_ng_container_32_div_15_ng_container_6_Template, 10, 5, "ng-container", 19);
@@ -226,7 +226,7 @@ function AppComponent_ng_container_32_div_15_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"]((pin_r16.value.request == null ? null : pin_r16.value.request.type) === "INPUT" ? "INPUT" : "OUTPUT");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", pin_r16.value.request.type === "OUTPUT");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (pin_r16.value.request == null ? null : pin_r16.value.request.type) === "OUTPUT");
 } }
 function AppComponent_ng_container_32_div_17_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
@@ -300,7 +300,7 @@ function AppComponent_ng_container_32_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.loadCount);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r4.commandResult);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r4.commandResultData);
 } }
 const urlParams = new URLSearchParams(window.location.search);
 const forcePort = urlParams.get('port');
@@ -329,6 +329,7 @@ class AppComponent {
             console.warn('web socket server already connected');
             return;
         }
+        delete this.disconnectAsked;
         this.initSocket();
         this.socketListen();
         this.saveConfig();
@@ -375,13 +376,6 @@ class AppComponent {
             clearInterval(this.reconnectTimer);
             console.log('websocket is connected');
             this.reloadPins();
-            /*
-              ws.send(JSON.stringify(pin0))
-              setInterval(function(){
-              pin0.mode = pin0.mode==='low' ? 'high' : 'low'
-              ws.send(JSON.stringify(pin0))
-              }, 1000)
-            */
         };
         this.ws.onmessage = ev => {
             const data = JSON.parse(ev.data);
@@ -396,24 +390,25 @@ class AppComponent {
             delete this.promises[data.responseId];
             return handler.res(data.data);
         }
-        switch (data.eventType) {
-            case 'log':
-                this.wsMessage = data.data;
-                break;
-            case 'command-result':
-                --this.loadCount;
-                this.commandResult = data.data;
-                break;
-            case 'pins':
-                --this.loadCount;
-                this.setPinsByResponse(data.data);
-                // this.pins = data.data // JSON.stringify(data, null, 2)
-                break;
-            default:
-                this.wsMessage = data;
+        if (!this[data.eventType]) {
+            console.warn(`unknown ws message of type ${data.eventType}`);
+            return this.wsMessage = data;
         }
+        this[data.eventType].call(this, data.data);
+    }
+    log(data) {
+        this.wsMessage = data.data;
+    }
+    commandResult(data) {
+        --this.loadCount;
+        this.commandResultData = data;
+    }
+    pins(data) {
+        --this.loadCount;
+        this.setPinsByResponse(data);
     }
     setPinsByResponse(data) {
+        console.log('data', data);
         Object.keys(data).forEach(key => {
             this.config.pins[key] = this.config.pins[key] || {
                 num: key, request: {}, state: {}
@@ -541,7 +536,8 @@ class AppComponent {
             this.config.pins[pinIndex] = {
                 num: pinIndex,
                 type: "INPUT",
-                mode: "LOW"
+                mode: "LOW",
+                request: {},
             };
             break;
         }

@@ -368,9 +368,9 @@
         <div style="display:flex;margin:1em;">
           <div style="font-size:1.4em;">pin: {{pin.key}}</div>
           <button style="font-size:1.4em;" type="button"
-            (click)="pin.value.request.type = pin.value.request.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
+            (click)="pin.value.request.type = pin.value.request?.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
           >{{pin.value.request?.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
-          <ng-container *ngIf="pin.value.request.type === 'OUTPUT'">
+          <ng-container *ngIf="pin.value.request?.type === 'OUTPUT'">
             <button style="font-size:1.4em;"
               (mouseup)="pinLow(pin.value)"
               (mousedown)="pinHigh(pin.value)"
@@ -425,7 +425,7 @@
     <!-- Terminal -->
     <form method="post" (submit)="sendTerminalCommand(terminalCommand)" action="javascript:"  style="width:100%">
       <div class="terminal" style="width:100%">
-        <pre>{{commandResult}}</pre>
+        <pre>{{commandResultData}}</pre>
       </div>
       <input type="text" (keyup)="terminalCommand=$event.target.value" style="width:100%" placeholder="$" />
       <input type="submit" value="send" />
