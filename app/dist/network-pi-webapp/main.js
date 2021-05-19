@@ -324,6 +324,7 @@ class AppComponent {
         this.connect();
     }
     connect() {
+        console.log('making ws connection...');
         if (this.ws) {
             console.warn('web socket server already connected');
             return;
@@ -372,7 +373,7 @@ class AppComponent {
         };
         this.ws.onopen = () => {
             clearInterval(this.reconnectTimer);
-            console.log('websocket is connected ...');
+            console.log('websocket is connected');
             this.reloadPins();
             /*
               ws.send(JSON.stringify(pin0))
@@ -443,12 +444,14 @@ class AppComponent {
         });
     }
     saveConfig() {
-        localStorage.networkPi = JSON.stringify(this.config);
+        localStorage.setItem('networkPi', JSON.stringify(this.config));
+        // console.log('saved localStorage', localStorage.networkPi, localStorage)
     }
     loadLocalStorage() {
         try {
             const localValues = localStorage.networkPi;
             const config = JSON.parse(localValues) || this.config;
+            console.log('previous localStorage loaded', config);
             Object.keys(config.pins).forEach(pinId => {
                 const pin = config.pins[pinId];
                 pin.request = pin.request || { type: 'INPUT' };
@@ -591,7 +594,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnamespaceHTML"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "div");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "form", 14);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("submit", function AppComponent_Template_form_submit_25_listener() { return ctx.connect(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("submit", function AppComponent_Template_form_submit_25_listener() { ctx.connect(); return ctx.saveConfig(); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](26, AppComponent_input_26_Template, 1, 1, "input", 15);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](27, AppComponent_button_27_Template, 2, 0, "button", 16);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](28, AppComponent_button_28_Template, 2, 0, "button", 17);

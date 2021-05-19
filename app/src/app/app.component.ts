@@ -64,6 +64,7 @@ export class AppComponent {
   }
 
   connect() {
+    console.log('making ws connection...')
     if (this.ws) {
       console.warn('web socket server already connected')
       return
@@ -123,7 +124,7 @@ export class AppComponent {
 
     this.ws.onopen = () => {
       clearInterval(this.reconnectTimer)
-      console.log('websocket is connected ...')
+      console.log('websocket is connected')
       this.reloadPins()
       /*
         ws.send(JSON.stringify(pin0))
@@ -210,13 +211,16 @@ export class AppComponent {
   }
 
   saveConfig() {
-    localStorage.networkPi = JSON.stringify(this.config)
+    localStorage.setItem('networkPi', JSON.stringify(this.config))
+    // console.log('saved localStorage', localStorage.networkPi, localStorage)
   }
 
   loadLocalStorage() {
     try {
       const localValues = localStorage.networkPi
       const config: Config = JSON.parse(localValues) || this.config
+
+      console.log('previous localStorage loaded', config)
 
       Object.keys(config.pins).forEach(pinId => {
         const pin: PinConfig = config.pins[pinId]

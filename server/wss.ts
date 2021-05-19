@@ -1,10 +1,24 @@
-import * as WebSocket from "ws"
 import * as os from "os"
+import * as WebSocket from "ws"
 import { pin, pi, InputPin, OutputPin } from "ack-pi"
-import { eventTypes, pinClasses, ServerPinsSummary, WsMessage } from "../shared/types";
+import { eventTypes, pinClasses, Pins, ServerPinsSummary, WsMessage } from "../shared/types";
+import { ConnectionSwitch } from "./index.utils";
 const { exec } = require("child_process");
 
-export const wss = new WebSocket.Server({noServer: true})
+export class WsPinConnectionSwitch extends ConnectionSwitch {
+  setPins(data: WsMessage) {
+    setPins( data.data )
+    this.send('pins', pins, data) // echo
+  }
+
+  getPins(data: WsMessage) {
+    this.send('pins', pins, data)
+  }
+
+  async command(data: WsMessage) {
+    this.send('command-result', await runCommand(data.data), data)
+  }
+}
 
 const isPiPlatform = os.platform()==="linux"
 const piPins = pi( isPiPlatform )
@@ -21,73 +35,6 @@ const pins: ServerPinsSummary = {
   }
 }
 const pinClasses:pinClasses = {}
-
-export class ConnectionSwitch {
-  constructor(public ws: WebSocket.connection) {
-    console.log('connected')
-    ws.on('message', (dataString:string) => this.onMessage(dataString))
-  }
-
-  async onMessage(dataString: string) {
-    try{
-      const data: WsMessage = JSON.parse( dataString )
-      this.processEvent(data.eventType, data)
-    }catch(e){
-      console.error(e)
-      return
-    }
-  }
-
-  async processEvent(
-    eventType: string, data: WsMessage
-  ): Promise<void> {
-    switch (data.eventType) {
-      case 'setPins':
-        // console.log('dataString', typeof dataString, typeof data, typeof data.data, data)
-        setPins( data.data );
-        this.send('pins', pins, data) // echo
-        break;
-
-      case 'getPins': 'pins'
-        this.send('pins', pins, data)
-        break;
-
-      case 'command':
-        this.send('command-result', await runCommand(data.data), data)
-        break;
-
-      default:
-        this.send('log', {
-          message: `received unknown command ${data.eventType}`, data
-        }, data)
-     }
-   }
-
-   send(eventType: eventTypes, data: any, responseTo?: WsMessage) {
-    const message: WsMessage = {eventType, data}
-
-    if (responseTo?.responseId) {
-      message.responseId = responseTo.responseId
-    }
-
-    this.ws.send( JSON.stringify(message))
-  }
-}
-
-export class WssSwitch {
-  constructor(public wss: WebSocket.Server) {
-    wss.on('connection', ws => this.onConnect(ws))
-    wss.on('open', (ws) => console.log('opened'))
-  }
-
-  async onConnect(ws: WebSocket.connection) {
-    return this.getNewConnectionSwitch(ws)
-  }
-
-  getNewConnectionSwitch(ws: WebSocket.connection) {
-    return new ConnectionSwitch(ws)
-  }
-}
 
 /** browser debug any sent command */
 function runCommand(command: string) {

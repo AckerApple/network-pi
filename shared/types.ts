@@ -3,7 +3,7 @@ import { pin, Pin, InputPin, OutputPin } from "ack-pi"
 export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'command-result'
 export interface WsMessage {
   responseId?: string
-  eventType: eventTypes
+  eventType: string // eventTypes
   data: any
 }
 

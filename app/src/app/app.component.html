@@ -311,7 +311,7 @@
       </svg>
     </div>
     <div>
-      <form method="post" (submit)="connect()" action="javascript:">
+      <form method="post" (submit)="connect();saveConfig()" action="javascript:">
         <input *ngIf="!ws" type="text"
           (change)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125"
           placeholder="Web Socket URL"
