@@ -21,7 +21,11 @@ class WsEventProcessor {
     constructor(ws) {
         this.ws = ws;
         this.$message = new rxjs_1.Subject();
-        ws.on('message', (dataString) => this.onMessage(dataString));
+    }
+    monitorMessages() {
+        console.log('listening to messages on socket connection...');
+        this.ws.on('message', (dataString) => this.onMessage(dataString));
+        return this;
     }
     onMessage(dataString) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {

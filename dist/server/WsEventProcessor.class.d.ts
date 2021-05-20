@@ -10,6 +10,7 @@ export declare class WsEventProcessor {
     ws: WebSocket;
     $message: Subject<WsMessage>;
     constructor(ws: WebSocket);
+    monitorMessages(): this;
     onMessage(dataString: string): Promise<void>;
     send(eventType: string, data: any, responseTo?: WsMessage): void;
 }

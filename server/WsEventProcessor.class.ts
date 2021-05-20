@@ -18,8 +18,12 @@ export class SocketSwitch {
 export class WsEventProcessor {
   $message: Subject<WsMessage> = new Subject()
 
-  constructor(public ws: WebSocket) {
-    ws.on('message', (dataString:string) => this.onMessage(dataString))
+  constructor(public ws: WebSocket) {}
+
+  monitorMessages() {
+    console.log('listening to messages on socket connection...')
+    this.ws.on('message', (dataString:string) => this.onMessage(dataString))
+    return this
   }
 
   async onMessage(dataString: string) {
