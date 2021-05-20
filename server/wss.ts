@@ -1,11 +1,11 @@
 import * as os from "os"
 import * as WebSocket from "ws"
 import { pin, pi, InputPin, OutputPin } from "ack-pi"
-import { eventTypes, pinClasses, Pins, ServerPinsSummary, WsMessage } from "../shared/types";
-import { ConnectionSwitch } from "./index.utils";
+import {  pinClasses, ServerPinsSummary, WsMessage } from "../shared/types";
+import { WsEventMessageHandler } from "./WsEventMessageHandler.class";
 const { exec } = require("child_process");
 
-export class WsPinConnectionSwitch extends ConnectionSwitch {
+export class WsPinConnectionSwitch extends WsEventMessageHandler {
   setPins(data: WsMessage) {
     setPins( data.data )
     this.send('pins', pins, data) // echo

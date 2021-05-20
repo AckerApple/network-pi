@@ -1,9 +1,7 @@
-const nodeStatic = require('node-static');
+const nodeStatic = require('node-static')
 import * as WebSocket from "ws"
 import * as http from "http"
 import * as url from "url"
-import { WsMessage } from "../shared/types";
-import { Subject } from "rxjs";
 
 export function startHttpWebSocketServer({
   port = 3000,
@@ -55,58 +53,5 @@ export function upgradeHttpServerToWebSocket(request, socket, head, wss: WebSock
     });
   } else {
     socket.destroy()
-  }
-}
-
-export class ConnectionSwitch {
-  $message: Subject<WsMessage> = new Subject()
-
-  constructor(public ws: WebSocket.connection) {
-    console.log('connected')
-    ws.on('message', (dataString:string) => this.onMessage(dataString))
-  }
-
-  async onMessage(dataString: string) {
-    try{
-      const data: WsMessage = JSON.parse( dataString )
-      this.$message.next(data)
-      this.processEvent(data.eventType, data)
-    }catch(e){
-      console.error(e)
-      return
-    }
-  }
-
-  async processEvent(
-    eventType: string, data: WsMessage
-  ): Promise<void> {
-    if(!this[data.eventType]) {
-      const message = `received unknown command ${data.eventType}`
-
-      console.warn('unknown', message)
-      this.send('log', {
-        message, data
-      }, data)
-
-      return
-    }
-
-    try {
-      this[data.eventType].call(this, data)
-    } catch (error) {
-      this.send('log', {
-        message: `failed command ${data.eventType}`, error
-      }, data)
-    }
-   }
-
-   send(eventType: string, data: any, responseTo?: WsMessage) {
-    const message: WsMessage = {eventType, data}
-
-    if (responseTo?.responseId) {
-      message.responseId = responseTo.responseId
-    }
-
-    this.ws.send( JSON.stringify(message))
   }
 }

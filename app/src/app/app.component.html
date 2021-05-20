@@ -313,7 +313,7 @@
     <div>
       <form method="post" (submit)="wsComm.connect();saveConfig()" action="javascript:">
         <input *ngIf="!wsComm.ws" type="text"
-          (change)="config.wsUrl = $event.target.value" [value]="config.wsUrl" maxLength="125"
+          (change)="updateWsUrl($event.target.value)" [value]="config.wsUrl" maxLength="125"
           placeholder="Web Socket URL"
         />
         <button style="background-color: red;" *ngIf="wsComm.ws" type="button"
