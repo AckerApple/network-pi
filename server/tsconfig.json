@@ -14,5 +14,5 @@
       "es2018",
       "dom"
     ]
-  }, "include": ["../shared"]
+  }, "include": ["../shared", "."]
 }

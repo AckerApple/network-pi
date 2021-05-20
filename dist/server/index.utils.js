@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConnectionSwitch = exports.upgradeHttpServerToWebSocket = exports.addWebSocketToHttpServer = exports.startHttpWebSocketServer = void 0;
-const tslib_1 = require("tslib");
+exports.upgradeHttpServerToWebSocket = exports.addWebSocketToHttpServer = exports.startHttpWebSocketServer = void 0;
 const nodeStatic = require('node-static');
 const WebSocket = require("ws");
 const http = require("http");
 const url = require("url");
-const rxjs_1 = require("rxjs");
 function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePath }) {
     console.log('serving static files from', httpStaticFilePath);
     var file = new (nodeStatic.Server)(httpStaticFilePath);
@@ -49,53 +47,4 @@ function upgradeHttpServerToWebSocket(request, socket, head, wss) {
     }
 }
 exports.upgradeHttpServerToWebSocket = upgradeHttpServerToWebSocket;
-class ConnectionSwitch {
-    constructor(ws) {
-        this.ws = ws;
-        this.$message = new rxjs_1.Subject();
-        console.log('connected');
-        ws.on('message', (dataString) => this.onMessage(dataString));
-    }
-    onMessage(dataString) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            try {
-                const data = JSON.parse(dataString);
-                this.$message.next(data);
-                this.processEvent(data.eventType, data);
-            }
-            catch (e) {
-                console.error(e);
-                return;
-            }
-        });
-    }
-    processEvent(eventType, data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!this[data.eventType]) {
-                const message = `received unknown command ${data.eventType}`;
-                console.warn('unknown', message);
-                this.send('log', {
-                    message, data
-                }, data);
-                return;
-            }
-            try {
-                this[data.eventType].call(this, data);
-            }
-            catch (error) {
-                this.send('log', {
-                    message: `failed command ${data.eventType}`, error
-                }, data);
-            }
-        });
-    }
-    send(eventType, data, responseTo) {
-        const message = { eventType, data };
-        if (responseTo === null || responseTo === void 0 ? void 0 : responseTo.responseId) {
-            message.responseId = responseTo.responseId;
-        }
-        this.ws.send(JSON.stringify(message));
-    }
-}
-exports.ConnectionSwitch = ConnectionSwitch;
 //# sourceMappingURL=index.utils.js.map

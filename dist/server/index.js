@@ -4,6 +4,7 @@ const path = require("path");
 const nconf = require("nconf");
 const wss_1 = require("./wss");
 const index_utils_1 = require("./index.utils");
+const WsEventProcessor_class_1 = require("./WsEventProcessor.class");
 // configurations
 nconf.argv().env(); // read params
 const host = nconf.get('host') || undefined;
@@ -16,7 +17,7 @@ const servers = index_utils_1.startHttpWebSocketServer({
 });
 servers.wss.on('connection', ws => {
     console.log('connection');
-    new wss_1.WsPinConnectionSwitch(ws);
+    new WsEventProcessor_class_1.WsEventProcessor(ws).$message.subscribe(msg => new wss_1.WsPinConnectionSwitch(ws).processWsEventMessage(msg));
 });
 servers.wss.on('open', (ws) => console.log('opened'));
 //# sourceMappingURL=index.js.map

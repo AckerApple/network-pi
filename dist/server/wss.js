@@ -4,9 +4,9 @@ exports.WsPinConnectionSwitch = void 0;
 const tslib_1 = require("tslib");
 const os = require("os");
 const ack_pi_1 = require("ack-pi");
-const index_utils_1 = require("./index.utils");
+const WsEventMessageHandler_class_1 = require("./WsEventMessageHandler.class");
 const { exec } = require("child_process");
-class WsPinConnectionSwitch extends index_utils_1.ConnectionSwitch {
+class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessageHandler {
     setPins(data) {
         setPins(data.data);
         this.send('pins', pins, data); // echo
