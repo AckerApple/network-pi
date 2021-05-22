@@ -1,0 +1,14 @@
+[Unit]
+Description=Pinball Game
+After=network.target
+
+[Service]
+ExecStart=/home/pi/.nvm/versions/node/v10.13.0/bin/npm --prefix /home/pi/projects/services/hokus-pokus run start
+WorkingDirectory=/home/pi/projects/services/hokus-pokus
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
