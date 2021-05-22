@@ -1,5 +1,6 @@
 [Unit]
 Description=Pinball Game
+DefaultDependencies=false
 After=network.target
 
 [Service]
