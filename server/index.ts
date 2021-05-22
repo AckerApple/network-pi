@@ -28,8 +28,9 @@ const servers = startHttpWebSocketServer({
 servers.wss.on('connection', ws => {
   console.log('connection')
 
-  new WsEventProcessor(ws).$message.subscribe(msg =>
-    new WsPinConnectionSwitch(ws).processWsEventMessage(msg)
+  const messageHandler = new WsPinConnectionSwitch(ws)
+  new WsEventProcessor(ws).monitorMessages().$message.subscribe(msg =>
+    messageHandler.processWsEventMessage(msg)
   )
 })
 servers.wss.on('open', (ws) => console.log('opened'))

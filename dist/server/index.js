@@ -17,7 +17,8 @@ const servers = index_utils_1.startHttpWebSocketServer({
 });
 servers.wss.on('connection', ws => {
     console.log('connection');
-    new WsEventProcessor_class_1.WsEventProcessor(ws).$message.subscribe(msg => new wss_1.WsPinConnectionSwitch(ws).processWsEventMessage(msg));
+    const messageHandler = new wss_1.WsPinConnectionSwitch(ws);
+    new WsEventProcessor_class_1.WsEventProcessor(ws).monitorMessages().$message.subscribe(msg => messageHandler.processWsEventMessage(msg));
 });
 servers.wss.on('open', (ws) => console.log('opened'));
 //# sourceMappingURL=index.js.map
