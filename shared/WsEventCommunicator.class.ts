@@ -15,11 +15,11 @@ export class WsEventCommunicator {
 
   $onopen: Subject<WebSocket> = new Subject()
   $onmessage: Subject<WsMessage> = new Subject()
+  $reconnecting: Subject<void> = new Subject()
 
   constructor(public url?: string) {}
 
   connect() {
-    console.log('making ws connection...')
     if (this.ws) {
       console.warn('web socket server already connected')
       return
@@ -66,7 +66,7 @@ export class WsEventCommunicator {
       if (!this.disconnectAsked) {
         console.log('Server closed unexpectedly. Attempting to reconnect')
         this.reconnectTimer = setInterval(() => {
-          console.log('attempting reconnect')
+          this.$reconnecting.next()
           this.connect()
         }, 5000)
         return
@@ -77,7 +77,6 @@ export class WsEventCommunicator {
 
     this.ws.onopen = () => {
       clearInterval(this.reconnectTimer)
-      console.log('websocket is connected')
       this.$onopen.next(this.ws)
     }
 

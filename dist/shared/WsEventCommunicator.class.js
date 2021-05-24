@@ -9,9 +9,9 @@ class WsEventCommunicator {
         this.promises = {};
         this.$onopen = new rxjs_1.Subject();
         this.$onmessage = new rxjs_1.Subject();
+        this.$reconnecting = new rxjs_1.Subject();
     }
     connect() {
-        console.log('making ws connection...');
         if (this.ws) {
             console.warn('web socket server already connected');
             return;
@@ -49,7 +49,7 @@ class WsEventCommunicator {
             if (!this.disconnectAsked) {
                 console.log('Server closed unexpectedly. Attempting to reconnect');
                 this.reconnectTimer = setInterval(() => {
-                    console.log('attempting reconnect');
+                    this.$reconnecting.next();
                     this.connect();
                 }, 5000);
                 return;
@@ -58,7 +58,6 @@ class WsEventCommunicator {
         };
         this.ws.onopen = () => {
             clearInterval(this.reconnectTimer);
-            console.log('websocket is connected');
             this.$onopen.next(this.ws);
         };
         this.ws.onmessage = ev => {
