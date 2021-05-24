@@ -27,6 +27,7 @@ class WsEventCommunicator {
         this.disconnectAsked = true;
         this.ws.close();
         delete this.ws;
+        clearInterval(this.reconnectTimer);
     }
     reconnect() {
         this.disconnect();
