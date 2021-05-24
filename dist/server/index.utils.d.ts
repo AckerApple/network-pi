@@ -10,4 +10,5 @@ export declare function startHttpWebSocketServer({ port, host, httpStaticFilePat
     wss: WebSocket.Server;
 };
 export declare function addWebSocketToHttpServer(server: http.Server): WebSocket.Server;
+export declare function registerWss(wss: WebSocket.Server): WebSocket.Server;
 export declare function upgradeHttpServerToWebSocket(request: any, socket: any, head: any, wss: WebSocket.Server): void;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.upgradeHttpServerToWebSocket = exports.addWebSocketToHttpServer = exports.startHttpWebSocketServer = void 0;
+exports.upgradeHttpServerToWebSocket = exports.registerWss = exports.addWebSocketToHttpServer = exports.startHttpWebSocketServer = void 0;
 const nodeStatic = require('node-static');
 const WebSocket = require("ws");
 const http = require("http");
@@ -26,13 +26,17 @@ exports.startHttpWebSocketServer = startHttpWebSocketServer;
 function addWebSocketToHttpServer(server) {
     console.log('upgrading http server...');
     const wss = new WebSocket.Server({ noServer: true });
-    server.on('upgrade', (request, socket, head) => {
+    return registerWss(wss);
+}
+exports.addWebSocketToHttpServer = addWebSocketToHttpServer;
+function registerWss(wss) {
+    wss.on('upgrade', (request, socket, head) => {
         console.log('upgrading http server');
         upgradeHttpServerToWebSocket(request, socket, head, wss);
     });
     return wss;
 }
-exports.addWebSocketToHttpServer = addWebSocketToHttpServer;
+exports.registerWss = registerWss;
 function upgradeHttpServerToWebSocket(request, socket, head, wss) {
     console.log('starting websocket server...');
     const pathname = url.parse(request.url).pathname;

@@ -34,7 +34,11 @@ export function startHttpWebSocketServer({
 export function addWebSocketToHttpServer(server: http.Server): WebSocket.Server {
   console.log('upgrading http server...')
   const wss = new WebSocket.Server({noServer: true})
-  server.on('upgrade', (request, socket, head) => {
+  return registerWss(wss)
+}
+
+export function registerWss(wss: WebSocket.Server) {
+  wss.on('upgrade', (request, socket, head) => {
     console.log('upgrading http server')
     upgradeHttpServerToWebSocket(request, socket, head, wss)
   })
