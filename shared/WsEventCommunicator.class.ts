@@ -64,7 +64,7 @@ export class WsEventCommunicator {
     this.ws.onclose = () => {
       delete this.ws
 
-      if (!this.disconnectAsked) {
+      if (!this.reconnectTimer && !this.disconnectAsked) {
         console.log('Server closed unexpectedly. Attempting to reconnect')
         this.reconnectTimer = setInterval(() => {
           this.$reconnecting.next()
