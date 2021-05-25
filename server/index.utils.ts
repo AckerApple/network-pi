@@ -34,12 +34,8 @@ export function startHttpWebSocketServer({
 export function addWebSocketToHttpServer(server: http.Server): WebSocket.Server {
   console.log('upgrading http server...')
   const wss = new WebSocket.Server({noServer: true})
-  return registerWss(wss)
-}
-
-export function registerWss(wss: WebSocket.Server) {
-  wss.on('upgrade', (request, socket, head) => {
-    console.log('upgrading http server')
+  server.on('upgrade', (request, socket, head) => {
+    console.log('upgraded http server')
     upgradeHttpServerToWebSocket(request, socket, head, wss)
   })
   return wss
@@ -53,8 +49,7 @@ export function upgradeHttpServerToWebSocket(request, socket, head, wss: WebSock
     wss.handleUpgrade(request, socket, head, function done(ws) {
       console.log('ws connection created on path /ws')
       wss.emit('connection', ws, request)
-
-    });
+    })
   } else {
     socket.destroy()
   }
