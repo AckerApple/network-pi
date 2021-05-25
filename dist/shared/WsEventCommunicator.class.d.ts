@@ -22,7 +22,7 @@ export declare class WsEventCommunicator {
     disconnect(): void;
     reconnect(): void;
     sendWaitMessageResponse<T>(message: WsMessage): Promise<T>;
-    socketListen(): void;
+    socketListen(ws: WebSocket): void;
     send(eventType: string, data?: any): void;
     sendWaitResponse<T>(eventType: string, data?: any): Promise<T>;
 }

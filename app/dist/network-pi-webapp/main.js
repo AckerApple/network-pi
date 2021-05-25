@@ -28,10 +28,10 @@ class WsEventCommunicator {
         }
         delete this.disconnectAsked;
         this.initSocket();
-        this.socketListen();
     }
     initSocket() {
-        this.ws = new WebSocket(this.url);
+        const ws = new WebSocket(this.url);
+        this.socketListen(ws);
     }
     disconnect() {
         this.disconnectAsked = true;
@@ -52,10 +52,10 @@ class WsEventCommunicator {
             this.ws.send(JSON.stringify(message));
         });
     }
-    socketListen() {
+    socketListen(ws) {
         const pins = {};
         // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
-        this.ws.onclose = () => {
+        ws.onclose = () => {
             delete this.ws;
             if (!this.reconnectTimer && !this.disconnectAsked) {
                 console.log('Server closed unexpectedly. Attempting to reconnect');
@@ -67,11 +67,12 @@ class WsEventCommunicator {
             }
             delete this.disconnectAsked;
         };
-        this.ws.onopen = () => {
+        ws.onopen = () => {
             clearInterval(this.reconnectTimer);
+            this.ws = ws; // only when connected successfully do we set
             this.$onopen.next(this.ws);
         };
-        this.ws.onmessage = ev => {
+        ws.onmessage = ev => {
             const data = JSON.parse(ev.data);
             this.lastMessage = data;
             // someone waiting for a response?
