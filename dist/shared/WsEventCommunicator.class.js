@@ -30,6 +30,7 @@ class WsEventCommunicator {
             delete this.ws;
         }
         clearInterval(this.reconnectTimer);
+        delete this.reconnectTimer;
     }
     reconnect() {
         this.disconnect();
