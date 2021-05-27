@@ -4,12 +4,17 @@ DefaultDependencies=false
 After=network.target
 
 [Service]
+Type=simple
 ExecStart=/home/pi/.nvm/versions/node/v10.13.0/bin/npm --prefix /home/pi/projects/services/hokus-pokus run start
-WorkingDirectory=/home/pi/projects/services/hokus-pokus
+# WorkingDirectory=/home/pi/projects/services/hokus-pokus
+# ExecStop=/path-to-execute
 StandardOutput=inherit
 StandardError=inherit
-Restart=always
+Restart=no
+#Restart=always
 User=pi
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
+# WantedBy=sysinit.target

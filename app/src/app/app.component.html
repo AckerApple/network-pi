@@ -392,9 +392,6 @@
             <button style="font-size:1.4em;" type="button"
               (click)="pin.details=!pin.details"
             >ℹ️</button>
-            <button style="font-size:1.4em;" type="button"
-              (click)="deletePin(pin)"
-            >🗑️</button>
             <div *ngIf="pin.details" style="flex-grow:1;">
               <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
                 (click)="pin.value.request.mode='LOW';submitPins(pin.value)"
@@ -416,6 +413,9 @@
               >short press</button>
             </div>
           </ng-container>
+          <button style="font-size:1.4em;" type="button"
+            (click)="deletePin(pin)"
+          >🗑️</button>
         </div>
       </div>
     </div>
