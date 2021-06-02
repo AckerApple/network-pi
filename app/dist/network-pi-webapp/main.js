@@ -90,6 +90,13 @@ class WsEventCommunicator {
     send(eventType, data) {
         this.ws.send(JSON.stringify({ eventType, data }));
     }
+    trySend(eventType, data) {
+        if (!this.ws) {
+            return false;
+        }
+        this.send(eventType, data);
+        return true;
+    }
     sendWaitResponse(eventType, data) {
         const message = { eventType, data };
         return this.sendWaitMessageResponse(message);

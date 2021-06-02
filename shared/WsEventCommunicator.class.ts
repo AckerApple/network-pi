@@ -104,6 +104,16 @@ export class WsEventCommunicator {
     this.ws.send(JSON.stringify({eventType, data}))
   }
 
+  trySend(eventType: string, data?: any) {
+    if (!this.ws) {
+      return false
+    }
+
+    this.send(eventType, data)
+
+    return true
+  }
+
   sendWaitResponse<T>(eventType: string, data?: any): Promise<T>{
     const message = {eventType, data}
     return this.sendWaitMessageResponse<T>(message)
