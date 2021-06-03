@@ -43,7 +43,7 @@
     "rxjs": "^7.0.1",
     "systeminformation": "^5.7.4",
     "ts-node": "^9.1.1",
-    "ws": "^7.4.4"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "ts-node-dev": "^1.1.6",
