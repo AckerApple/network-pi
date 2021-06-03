@@ -11,7 +11,7 @@ export interface Pins {
   [index:number] : pin
 }
 
-export interface pinClasses{
+export interface PinClasses{
   [index:number]: InputPin | OutputPin | Pin
 }
 

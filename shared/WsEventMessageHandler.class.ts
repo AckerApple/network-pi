@@ -1,3 +1,5 @@
+/** this may belong in shared */
+
 import { WsMessage } from "../shared/types"
 import { WsEventProcessor } from "./WsEventProcessor.class"
 

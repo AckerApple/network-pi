@@ -1,4 +1,4 @@
-<!-- 🗑️ ℹ️ -->
+<!-- 🪲 ⚡ 🗑️ ℹ️ -->
 <style>
   :host {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -328,11 +328,13 @@
   </div>
   <br /><br />
 
+  <ng-container *ngTemplateOutlet="pinPanelTemplate"></ng-container>
+
   <ng-container *ngIf="wsComm.ws">
     <form (submit)="submitPins()" action="javascript:" style="display: block;width: 100%;">
-      <div *ngIf="config.debug" style="display: flex;flex-wrap:wrap">
-        <div style="flex-grow:1;margin:.3em;">
-          <h3 style="margin-bottom:0;">PINS</h3>
+      <div *ngIf="config.debug" class="flex-wrap child-margin child-pad">
+        <div class="flex-1 bg-grey-3x">
+          <h3>PINS</h3>
           <div style="width: 100%;display:flex;">
             <textarea wrap="off" style="flex-grow:1" rows="30"
             (keyup) ="setPinsByString($event.target.value)"
@@ -340,85 +342,91 @@
           </div>
         </div>
 
-        <div style="flex-grow:1;margin:.3em;">
-          <h3 style="margin-bottom:0;">MESSAGES</h3>
+        <div class="flex-1 bg-grey-3x">
+          <h3>MESSAGES</h3>
           <div style="width: 100%;display:flex;">
             <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wsComm.lastMessage | json}}</textarea>
           </div>
         </div>
+
+        <div class="flex-1 bg-grey-3x">
+          <div class="flex-apart">
+            <h3>Network Interfaces</h3>
+            <div>
+              <a (click)="fetchNetworkInterfaces()">🔄</a>
+            </div>
+          </div>
+          <div style="width: 100%;display:flex;">
+            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.networkInterfaces | json}}</textarea>
+          </div>
+        </div>
+
+        <div class="flex-1 bg-grey-3x">
+          <div class="flex-apart">
+            <h3>WIFI Connections</h3>
+            <div>
+              <a (click)="fetchWifiConnections()">🔄</a>
+            </div>
+          </div>
+          <div style="width: 100%;display:flex;">
+            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.wifiConnections | json}}</textarea>
+          </div>
+        </div>
+
+        <div class="flex-1 bg-grey-3x">
+          <div class="flex-apart">
+            <h3 class="flex-1">WIFI Networks</h3>
+            <div class="margin-h">
+              <select *ngIf="wifi.wifiNetworks?.length" (change)="wifi.viewNetworkIndex = $event.target.options[$event.target.selectedIndex].value">
+                <option *ngFor="let wifiNetwork of wifi.wifiNetworks;let index=index" [value]="index"
+                  [selected]="index === wifi.viewNetworkIndex"
+                >{{wifiNetwork.ssid}}</option>
+              </select>
+            </div>
+            <div>
+              <a (click)="fetchWifiNetworks()">🔄</a>
+            </div>
+          </div>
+          <div *ngIf="wifi.viewNetworkIndex!=undefined">
+            <div style="width: 100%;display:flex;">
+              <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.wifiNetworks[wifi.viewNetworkIndex] | json}}</textarea>
+            </div>
+            <div class="flex-right">
+              <select (change)="wifi.tempIface = $event.target.value">
+                <option *ngFor="let item of wifi.networkInterfaces" [value]="item.iface"
+                  [selected] = "wifi.tempIface === item.iface"
+                >{{item.type}} - {{item.iface}}</option>
+              </select>
+              <input type="password" placeholder="wifi password" (change)="wifi.tempPassword = $event.target.value" />
+              <button type="button" (click)="wifiConnect()">
+                connect
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 bg-grey-3x">
+          <h3>Bluetooth Devices</h3>
+          <div style="width: 100%;display:flex;">
+            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{bluetoothDevices | json}}</textarea>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;flex-wrap:wrap">
-        <button type="button" (click)="config.debug=!config.debug;saveConfig()" style="flex-grow:1;"
+      <div class="flex-wrap child-pad-smx">
+        <button type="button" (click)="config.debug=!config.debug;saveConfig()" class="flex-1 text-2x"
           [style.background-color] = "config.debug ? 'green' : undefined"
-        >DEBUG</button>
-        <button type="button" (click)="reloadPins()" style="flex-grow:1;"
+        >🪲 DEBUG</button>
+        <button type="button" (click)="reloadPins()" class="flex-1 text-2x"
         >REFRESH PINS</button>
         <button type="button" [style.background-color]="strobePins ? 'green' : null"
-          (click)="toggleStrobePins()" style="flex-grow:1;"
+          (click)="toggleStrobePins()" class="flex-1 text-2x"
         >STROBE PINS</button>
-        <button type="button" style="flex-grow:1;" (click)="addPin()"
+        <button type="button" class="flex-1 text-2x" (click)="addPin()"
         >ADD PIN</button>
-        <button type="submit" style="flex-grow:1;"
+        <button type="submit" class="flex-1 text-2x"
         >SAVE PINS</button>
       </div>
     </form>
-
-    <div class="disable-select">
-      <div *ngFor="let pin of config.pins | keyvalue">
-        <div style="display:flex;margin:1em;">
-          <div style="font-size:1.4em;">pin: {{pin.key}}</div>
-          <button style="font-size:1.4em;" type="button"
-            (click)="pin.value.request.type = pin.value.request?.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
-          >{{pin.value.request?.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
-          <ng-container *ngIf="pin.value.request?.type === 'OUTPUT'">
-            <button style="font-size:1.4em;"
-              (mouseup)="pinLow(pin.value)"
-              (mousedown)="pinHigh(pin.value)"
-              (touchstart)="pinHigh(pin.value)"
-              (touchend)="pinLow(pin.value)"
-              style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
-              [style.background-color] = "pin.value.request.mode==='HIGH' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
-              type="button"
-            >PRESS HIGH</button>
-            <button style="font-size:1.4em;"
-              (mouseup)="pinHigh(pin.value)"
-              (mousedown)="pinLow(pin.value)"
-              (touchstart)="pinLow(pin.value)"
-              (touchend)="pinHigh(pin.value)"
-              style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
-              [style.background-color] = "pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
-              type="button"
-            >PRESS LOW</button>
-            <button style="font-size:1.4em;" type="button"
-              (click)="pin.details=!pin.details"
-            >ℹ️</button>
-            <div *ngIf="pin.details" style="flex-grow:1;">
-              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
-                (click)="pin.value.request.mode='LOW';submitPins(pin.value)"
-              >LOW</button>
-              <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='HIGH' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
-                (click)="pin.value.request.mode='HIGH';submitPins(pin.value)"
-              >HIGH</button>
-              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.request.mode==='LOW'"
-                (click)="pin.value.request.mode='HIGH';shortPressPin(pin.value)"
-              >short low</button>
-              <button style="font-size:1.4em;" type="button" [disabled]="pin.value.request.mode==='HIGH'"
-                (click)="pin.value.request.mode='LOW';shortPressPin(pin.value)"
-              >short high</button>
-              <button style="font-size:1.4em;" type="button"
-                (click)="blinkPin(pin.value)" [style.background-color]="pin.value.blink ? 'green' : undefined"
-              >blink</button>
-              <button style="font-size:1.4em;" type="button"
-                (click)="shortPressPin(pin.value)"
-              >short press</button>
-            </div>
-          </ng-container>
-          <button style="font-size:1.4em;" type="button"
-            (click)="deletePin(pin)"
-          >🗑️</button>
-        </div>
-      </div>
-    </div>
 
     <div *ngIf="loadCount">... loading {{loadCount}} items ...</div>
 
@@ -437,5 +445,62 @@
   </ng-container>
 
 </div>
+
+<ng-template #pinPanelTemplate>
+  <div class="disable-select flex-wrap child-margin">
+    <div *ngFor="let pin of config.pins | keyvalue" class="flex-1 flex-wrap flex-valign-center child-margin bg-grey-3x">
+      <div style="font-size:1.4em;">⚡ {{pin.key}}</div>
+      <button style="font-size:1.4em;" type="button"
+        (click)="pin.value.request.type = pin.value.request?.type === 'INPUT' ? 'OUTPUT' : 'INPUT'"
+      >{{pin.value.request?.type === 'INPUT' ? 'INPUT' : 'OUTPUT'}}</button>
+      <ng-container *ngIf="pin.value.request?.type === 'OUTPUT'">
+        <button style="font-size:1.4em;"
+          (mouseup)="pinLow(pin.value)"
+          (mousedown)="pinHigh(pin.value)"
+          (touchstart)="pinHigh(pin.value)"
+          (touchend)="pinLow(pin.value)"
+          style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
+          [style.background-color] = "pin.value.request.mode==='HIGH' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
+          type="button"
+        >PRESS HIGH</button>
+        <button style="font-size:1.4em;"
+          (mouseup)="pinHigh(pin.value)"
+          (mousedown)="pinLow(pin.value)"
+          (touchstart)="pinLow(pin.value)"
+          (touchend)="pinHigh(pin.value)"
+          style="border:1px solid black;border-radius: 5px;padding:1.5em;display:flex;"
+          [style.background-color] = "pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
+          type="button"
+        >PRESS LOW</button>
+        <button style="font-size:1.4em;" type="button"
+          (click)="pin.details=!pin.details"
+        >ℹ️</button>
+        <div *ngIf="pin.details" class="flex-1">
+          <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='LOW' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
+            (click)="pin.value.request.mode='LOW';submitPins(pin.value)"
+          >LOW</button>
+          <button style="font-size:1.4em;" type="button" [style.background-color]="pin.value.request.mode==='HIGH' ? pin.value.request.mode==pin.value.state.mode && 'green' || 'blue' : undefined"
+            (click)="pin.value.request.mode='HIGH';submitPins(pin.value)"
+          >HIGH</button>
+          <button style="font-size:1.4em;" type="button" [disabled]="pin.value.request.mode==='LOW'"
+            (click)="pin.value.request.mode='HIGH';shortPressPin(pin.value)"
+          >short low</button>
+          <button style="font-size:1.4em;" type="button" [disabled]="pin.value.request.mode==='HIGH'"
+            (click)="pin.value.request.mode='LOW';shortPressPin(pin.value)"
+          >short high</button>
+          <button style="font-size:1.4em;" type="button"
+            (click)="blinkPin(pin.value)" [style.background-color]="pin.value.blink ? 'green' : undefined"
+          >blink</button>
+          <button style="font-size:1.4em;" type="button"
+            (click)="shortPressPin(pin.value)"
+          >short press</button>
+        </div>
+      </ng-container>
+      <button style="font-size:1.4em;" type="button"
+        (click)="deletePin(pin)"
+      >🗑️</button>
+    </div>
+  </div>
+</ng-template>
 
 <router-outlet></router-outlet>

@@ -2,6 +2,7 @@ import { eventTypes, PinState, ServerPinsSummary, WsMessage } from "../../../sha
 import { WsEventCommunicator } from "../../../shared/WsEventCommunicator.class";
 import { Component } from '@angular/core';
 import { Subscription } from "rxjs";
+import { Systeminformation } from "systeminformation";
 
 declare const ws: any
 
@@ -27,6 +28,15 @@ interface Config {
   }
 }
 
+interface WifiData {
+  tempPassword?: string
+  tempIface?: string
+  networkInterfaces?: Systeminformation.NetworkInterfacesData[]
+  wifiNetworks?: Systeminformation.WifiNetworkData[]
+  wifiConnections?: Systeminformation.WifiConnectionData[]
+  viewNetworkIndex?: number
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -48,6 +58,9 @@ export class AppComponent {
   terminalCommand: string
   commandResultData: string
 
+  wifi: WifiData = {}
+  bluetoothDevices?: Systeminformation.BluetoothDeviceData[]
+
   constructor() {
     console.log('starting')
 
@@ -56,7 +69,7 @@ export class AppComponent {
     }
 
     this.subs.add(
-      this.wsComm.$onopen.subscribe(() => this.reloadPins())
+      this.wsComm.$onopen.subscribe(() => this.wsConnected())
     ).add(
       this.wsComm.$onmessage.subscribe(data => this.handleWsMessage(data))
     )
@@ -65,9 +78,67 @@ export class AppComponent {
     this.wsComm.connect()
   }
 
+  wsConnected() {
+    this.reloadPins()
+    this.fetchNetworkInterfaces()
+    this.fetchWifiConnections()
+    this.fetchWifiNetworks()
+    this.fetchBluetoothDevices()
+  }
+
   updateWsUrl(url: string) {
     this.wsComm.url = url
     this.config.wsUrl = url
+  }
+
+  async wifiConnect() {
+    const index = this.wifi.viewNetworkIndex
+    const ssid = this.wifi.wifiNetworks[index].ssid
+    const password = this.wifi.tempPassword
+    const iface = this.wifi.tempIface
+    const options = { ssid, password, iface }
+    console.log('options', options)
+    const result = await this.wsComm.sendWaitResponse('wifiConnect', options)
+    console.log('result', result)
+  }
+
+  async fetchBluetoothDevices() {
+    this.bluetoothDevices = await this.wsComm.sendWaitResponse('bluetoothDevices')
+  }
+
+  async fetchNetworkInterfaces() {
+    this.wifi.networkInterfaces = await this.wsComm.sendWaitResponse('networkInterfaces')
+  }
+
+  async fetchWifiNetworks() {
+    this.wifi.wifiNetworks = await this.wsComm.sendWaitResponse('wifiNetworks')
+    this.paramWifiNetworkIndex()
+  }
+
+  async fetchWifiConnections() {
+    this.wifi.wifiConnections = await this.wsComm.sendWaitResponse('wifiConnections')
+    this.paramWifiNetworkIndex()
+  }
+
+  paramWifiNetworkIndex() {
+    const networks = this.wifi.wifiNetworks
+    const connections = this.wifi.wifiConnections
+
+    if (!networks?.length || !connections?.length || this.wifi.viewNetworkIndex != undefined) {
+      return
+    }
+
+    networks.find((network, index) => {
+      const ssid = network.ssid
+      const foundSsid = connections.find(connection => connection.ssid === ssid)
+
+      if (!foundSsid) {
+        return false
+      }
+
+      this.wifi.viewNetworkIndex = index
+      return true
+    })
   }
 
   ngOnDestroy() {
@@ -103,7 +174,6 @@ export class AppComponent {
   }
 
   setPinsByResponse(data: ServerPinsSummary) {
-    console.log('data', data)
     Object.keys(data).forEach(key => {
       this.config.pins[key] = this.config.pins[key] || {
         num: key, request: {}, state: {}
@@ -133,7 +203,6 @@ export class AppComponent {
 
   saveConfig() {
     localStorage.setItem('networkPi', JSON.stringify(this.config))
-    // console.log('saved localStorage', localStorage.networkPi, localStorage)
   }
 
   loadLocalStorage() {
@@ -238,7 +307,6 @@ export class AppComponent {
 
   addPin() {
     let index = -1
-    console.log(Object.keys(this.config.pins))
     while(++index < 40) {
       const pinIndex = index.toString()
       const found = Object.keys(this.config.pins).includes(pinIndex)
@@ -261,7 +329,6 @@ export class AppComponent {
 
   deletePin(pin: {value: {num: string}, details: string}) {
     const pinNum = pin.value.num.toString()
-    console.log('send to remove pin', pinNum)
     delete this.config.pins[pinNum]
     this.submitPins()
   }

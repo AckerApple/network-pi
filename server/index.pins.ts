@@ -1,28 +1,11 @@
 import * as os from "os"
-import * as WebSocket from "ws"
-import { pin, pi, InputPin, OutputPin } from "ack-pi"
-import {  pinClasses, ServerPinsSummary, WsMessage } from "../shared/types";
-import { WsEventMessageHandler } from "./WsEventMessageHandler.class";
-const { exec } = require("child_process");
-
-export class WsPinConnectionSwitch extends WsEventMessageHandler {
-  setPins(data: WsMessage) {
-    setPins( data.data )
-    this.send('pins', pins, data) // echo
-  }
-
-  getPins(data: WsMessage) {
-    this.send('pins', pins, data)
-  }
-
-  async command(data: WsMessage) {
-    this.send('commandResult', await runCommand(data.data), data)
-  }
-}
+import { pin, InputPin, OutputPin, pi } from "ack-pi"
+import { PinClasses, ServerPinsSummary } from "../shared/types"
 
 const isPiPlatform = os.platform()==="linux"
 const piPins = pi( isPiPlatform )
-const pins: ServerPinsSummary = {
+
+export const pins: ServerPinsSummary = {
   "0":{
     "num"  : 0,
     "type" : "INPUT", // OUTPUT
@@ -34,25 +17,8 @@ const pins: ServerPinsSummary = {
     // "mode" : "low"
   }
 }
-const pinClasses:pinClasses = {}
 
-/** browser debug any sent command */
-function runCommand(command: string) {
-  return new Promise((res, rej) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        return res(error)
-      }
-      if (stderr) {
-          return res(stderr)
-      }
-
-      res(stdout)
-    });
-  })
-}
-
-function setPins( data: ServerPinsSummary ){
+export function setPins( data: ServerPinsSummary ){
   // console.log('data', typeof data, data)
   for(let x in data){
     data[x].num = Number( <any>x )
@@ -66,7 +32,8 @@ function setPins( data: ServerPinsSummary ){
   });
 }
 
-function setPin(data: pin){
+const pinClasses: PinClasses = {}
+export function setPin(data: pin){
   const isInput = data.type === 'INPUT'
   const isOutput = data.type === 'OUTPUT'
 
@@ -99,17 +66,16 @@ function setPin(data: pin){
   console.log('set pin', data)
 }
 
-function isPinStateMatched(pin: pin, matchPin: pin) {
+export function isPinStateMatched(pin: pin, matchPin: pin) {
   return pin && matchPin && pin.type === matchPin.type && pin.mode === matchPin.mode
 }
 
-function setInputPin(pinClass: InputPin, data: pin) {
+export function setInputPin(pinClass: InputPin, data: pin) {
   const targetPin = (pins[data.num] as any)
   targetPin.state = pinClass.getState()
 }
 
-
-function setOutputPin(pinClass: OutputPin, data: pin) {
+export function setOutputPin(pinClass: OutputPin, data: pin) {
   //mode change
   switch(data.mode){
     case 'HIGH':

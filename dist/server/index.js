@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = require("path");
 const nconf = require("nconf");
-const wss_1 = require("./wss");
 const index_utils_1 = require("./index.utils");
-const WsEventProcessor_class_1 = require("./WsEventProcessor.class");
+const WsEventProcessor_class_1 = require("../shared/WsEventProcessor.class");
+const WsPinConnectionSwitch_class_1 = require("./WsPinConnectionSwitch.class");
 // configurations
 nconf.argv().env(); // read params
 const host = nconf.get('host') || undefined;
@@ -17,7 +17,7 @@ const servers = index_utils_1.startHttpWebSocketServer({
 });
 servers.wss.on('connection', ws => {
     console.log('connection');
-    const messageHandler = new wss_1.WsPinConnectionSwitch(ws);
+    const messageHandler = new WsPinConnectionSwitch_class_1.WsPinConnectionSwitch(ws);
     new WsEventProcessor_class_1.WsEventProcessor(ws).monitorMessages().$message.subscribe(msg => messageHandler.processWsEventMessage(msg));
 });
 servers.wss.on('open', (ws) => console.log('opened'));

@@ -1,3 +1,17 @@
+* {box-sizing:border-box}
+@import "node_modules/ack-css-boot/scss/ack-css-boot"; // may require ../ ref
+/*@import "ack-angular/ack-angular.scss";*/
+
+
+html {margin:0;padding:0;}
+body {font-size:28px;line-height: 1.2em;margin:0;padding:0;}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #222;color:#EEE
+  }
+}
+
 /* You can add global styles to this file, and also import other style files */
 html {
   -ms-touch-action: manipulation;

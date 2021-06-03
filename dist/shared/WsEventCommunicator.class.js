@@ -37,7 +37,7 @@ class WsEventCommunicator {
         this.connect();
     }
     sendWaitMessageResponse(message) {
-        const id = Date.now() + '-' + this.loadCount;
+        const id = Date.now() + '-' + (++this.loadCount);
         message.responseId = id;
         return new Promise((res, rej) => {
             const obj = { res, rej };
@@ -69,9 +69,11 @@ class WsEventCommunicator {
             const data = JSON.parse(ev.data);
             this.lastMessage = data;
             // someone waiting for a response?
-            if (data.responseId && this.promises[data.responseId]) {
-                const handler = this.promises[data.responseId];
-                delete this.promises[data.responseId];
+            const resId = data.responseId;
+            if (resId && this.promises[resId]) {
+                const handler = this.promises[resId];
+                delete this.promises[resId];
+                --this.loadCount;
                 return handler.res(data.data);
             }
             this.$onmessage.next(data);

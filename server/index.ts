@@ -1,8 +1,8 @@
 import * as path from "path"
 import * as nconf from "nconf"
-import { WsPinConnectionSwitch } from "./wss";
 import { startHttpWebSocketServer } from './index.utils'
-import { WsEventProcessor } from "./WsEventProcessor.class";
+import { WsEventProcessor } from "../shared/WsEventProcessor.class";
+import { WsPinConnectionSwitch } from "./WsPinConnectionSwitch.class";
 
 // configurations
 nconf.argv().env() // read params
