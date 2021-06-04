@@ -23,12 +23,14 @@ class WsEventCommunicator {
         this.$reconnecting = new rxjs_1.Subject();
     }
     connect() {
-        if (this.ws) {
-            console.warn('web socket server already connected');
-            return;
-        }
-        delete this.disconnectAsked;
-        this.initSocket();
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (this.ws) {
+                console.warn('web socket server already connected');
+                return;
+            }
+            delete this.disconnectAsked;
+            yield this.initSocket();
+        });
     }
     initSocket() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -60,15 +62,15 @@ class WsEventCommunicator {
     }
     keepRetryingConnect() {
         console.log(`Trying ws connection to ${this.url}...`);
-        this.reconnectTimer = setInterval(() => {
+        this.reconnectTimer = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.$reconnecting.next();
             try {
-                this.connect();
+                yield this.connect();
             }
             catch (err) {
                 console.warn(`Failed trying connection to ${this.url}`);
             }
-        }, 5000);
+        }), 5000);
     }
     socketListen(ws) {
         const pins = {};

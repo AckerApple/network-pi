@@ -29,7 +29,7 @@ export class WsEventCommunicator {
 
   constructor(public url?: string) {}
 
-  connect() {
+  async connect() {
     if (this.ws) {
       console.warn('web socket server already connected')
       return
@@ -37,7 +37,7 @@ export class WsEventCommunicator {
 
     delete this.disconnectAsked
 
-    this.initSocket()
+    await this.initSocket()
   }
 
   async initSocket() {
@@ -73,10 +73,10 @@ export class WsEventCommunicator {
   keepRetryingConnect() {
     console.log(`Trying ws connection to ${this.url}...`)
 
-    this.reconnectTimer = setInterval(() => {
+    this.reconnectTimer = setInterval(async () => {
       this.$reconnecting.next()
       try {
-        this.connect()
+        await this.connect()
       } catch (err) {
         console.warn(`Failed trying connection to ${this.url}`);
       }
