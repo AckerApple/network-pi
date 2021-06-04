@@ -29,7 +29,7 @@ class WsEventCommunicator {
                 return;
             }
             delete this.disconnectAsked;
-            yield this.initSocket();
+            return this.initSocket();
         });
     }
     initSocket() {
@@ -65,10 +65,13 @@ class WsEventCommunicator {
         this.reconnectTimer = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.$reconnecting.next();
             try {
-                yield this.connect();
+                console.log('running connect loop');
+                yield this.connect()
+                    .catch((err) => console.warn(`Failed connection try to ${this.url}`, err));
+                console.log('sent connect loop');
             }
             catch (err) {
-                console.warn(`Failed trying connection to ${this.url}`);
+                console.warn(`Failed trying connection to ${this.url}`, err);
             }
         }), 5000);
     }

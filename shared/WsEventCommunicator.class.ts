@@ -37,7 +37,7 @@ export class WsEventCommunicator {
 
     delete this.disconnectAsked
 
-    await this.initSocket()
+    return this.initSocket()
   }
 
   async initSocket() {
@@ -76,9 +76,14 @@ export class WsEventCommunicator {
     this.reconnectTimer = setInterval(async () => {
       this.$reconnecting.next()
       try {
+        console.log('running connect loop')
         await this.connect()
+          .catch((err: Error) =>
+            console.warn(`Failed connection try to ${this.url}`, err)
+          )
+        console.log('sent connect loop')
       } catch (err) {
-        console.warn(`Failed trying connection to ${this.url}`);
+        console.warn(`Failed trying connection to ${this.url}`, err)
       }
     }, 5000)
   }
