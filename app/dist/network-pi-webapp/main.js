@@ -14,6 +14,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "../node_modules/rxjs/dist/esm/index.js");
 
 
+let Ws;
+(() => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () { return Ws = (yield (typeof WebSocket === 'undefined' ? __webpack_require__.e(/*! import() | ws */ "ws").then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7)) : WebSocket)); }))();
 class WsEventCommunicator {
     constructor(url) {
         this.url = url;
@@ -33,9 +35,6 @@ class WsEventCommunicator {
     }
     initSocket() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            if (!WebSocket) {
-                const WebSocket = yield __webpack_require__.e(/*! import() | ws */ "ws").then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7));
-            }
             const ws = new WebSocket(this.url);
             this.socketListen(ws);
         });

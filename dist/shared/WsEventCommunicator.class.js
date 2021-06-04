@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WsEventCommunicator = void 0;
 const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
+let Ws;
+(() => tslib_1.__awaiter(void 0, void 0, void 0, function* () { return Ws = (yield (typeof WebSocket === 'undefined' ? Promise.resolve().then(() => require('ws')) : WebSocket)); }))();
 class WsEventCommunicator {
     constructor(url) {
         this.url = url;
@@ -22,9 +24,6 @@ class WsEventCommunicator {
     }
     initSocket() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (!WebSocket) {
-                const WebSocket = yield Promise.resolve().then(() => require('ws'));
-            }
             const ws = new WebSocket(this.url);
             this.socketListen(ws);
         });
