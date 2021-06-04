@@ -1,8 +1,14 @@
 import { WsMessage } from "./types";
 import { Subject } from "rxjs";
 
-let Ws: any;
-(async () => Ws = await (typeof WebSocket === 'undefined' ? import('ws') : (url) => new WebSocket(url)) as any)()
+const isWsBuiltIn = typeof WebSocket === 'undefined'
+async function getWs(url): Promise<WebSocket> {
+  if (isWsBuiltIn) {
+    return Promise.resolve(new WebSocket(url))
+  }
+
+  return new (await import('ws'))(url) as any
+}
 
 export class WsEventCommunicator {
   reconnectTimer: any
@@ -34,7 +40,7 @@ export class WsEventCommunicator {
   }
 
   async initSocket() {
-    const ws = Ws( this.url )
+    const ws = await getWs( this.url )
     this.socketListen(ws)
   }
 
