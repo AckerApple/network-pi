@@ -58,17 +58,25 @@ class WsEventCommunicator {
             this.ws.send(JSON.stringify(message));
         });
     }
+    keepRetryingConnect() {
+        console.log('Attempting to reconnect...');
+        this.reconnectTimer = setInterval(() => {
+            this.$reconnecting.next();
+            try {
+                this.connect();
+            }
+            catch (err) {
+                console.warn(`Failed to trying connection to ${this.url}`);
+            }
+        }, 5000);
+    }
     socketListen(ws) {
         const pins = {};
         // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
         ws.onclose = () => {
             delete this.ws;
             if (!this.reconnectTimer && !this.disconnectAsked) {
-                console.log('Server closed unexpectedly. Attempting to reconnect');
-                this.reconnectTimer = setInterval(() => {
-                    this.$reconnecting.next();
-                    this.connect();
-                }, 5000);
+                this.keepRetryingConnect();
                 return;
             }
             delete this.disconnectAsked;

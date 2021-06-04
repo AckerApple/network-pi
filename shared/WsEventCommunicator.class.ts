@@ -70,6 +70,18 @@ export class WsEventCommunicator {
     })
   }
 
+  keepRetryingConnect() {
+    console.log('Attempting to reconnect...')
+    this.reconnectTimer = setInterval(() => {
+      this.$reconnecting.next()
+      try {
+        this.connect()
+      } catch (err) {
+        console.warn(`Failed trying connection to ${this.url}`);
+      }
+    }, 5000)
+  }
+
   socketListen(ws: WebSocket) {
     const pins = {}
     // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
@@ -78,11 +90,7 @@ export class WsEventCommunicator {
       delete this.ws
 
       if (!this.reconnectTimer && !this.disconnectAsked) {
-        console.log('Server closed unexpectedly. Attempting to reconnect')
-        this.reconnectTimer = setInterval(() => {
-          this.$reconnecting.next()
-          this.connect()
-        }, 5000)
+        this.keepRetryingConnect()
         return
       }
 

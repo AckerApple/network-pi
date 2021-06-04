@@ -22,6 +22,7 @@ export declare class WsEventCommunicator {
     disconnect(): void;
     reconnect(): void;
     sendWaitMessageResponse<T>(message: WsMessage): Promise<T>;
+    keepRetryingConnect(): void;
     socketListen(ws: WebSocket): void;
     send(eventType: string, data?: any): void;
     trySend(eventType: string, data?: any): boolean;
