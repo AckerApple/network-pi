@@ -3,13 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WsEventCommunicator = void 0;
 const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
-const isWsBuiltIn = typeof WebSocket === 'undefined';
+const isWsNeeded = typeof WebSocket === 'undefined';
 function getWs(url) {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        if (isWsBuiltIn) {
-            return Promise.resolve(new WebSocket(url));
+        if (isWsNeeded) {
+            const ws = yield Promise.resolve().then(() => require('ws'));
+            return new ws(url);
         }
-        return new (yield Promise.resolve().then(() => require('ws')))(url);
+        return new WebSocket(url);
     });
 }
 class WsEventCommunicator {

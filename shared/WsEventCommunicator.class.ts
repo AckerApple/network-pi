@@ -1,13 +1,14 @@
 import { WsMessage } from "./types";
 import { Subject } from "rxjs";
 
-const isWsBuiltIn = typeof WebSocket === 'undefined'
+const isWsNeeded = typeof WebSocket === 'undefined'
 async function getWs(url): Promise<WebSocket> {
-  if (isWsBuiltIn) {
-    return Promise.resolve(new WebSocket(url))
+  if (isWsNeeded) {
+    const ws = await import('ws')
+    return new ws(url) as any
   }
 
-  return new (await import('ws'))(url) as any
+  return new WebSocket(url)
 }
 
 export class WsEventCommunicator {
