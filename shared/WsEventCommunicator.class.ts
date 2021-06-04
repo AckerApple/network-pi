@@ -24,6 +24,7 @@ export class WsEventCommunicator {
   } = {}
 
   $onopen: Subject<WebSocket> = new Subject()
+  $error: Subject<WebSocket> = new Subject()
   $onmessage: Subject<WsMessage> = new Subject()
   $reconnecting: Subject<void> = new Subject()
 
@@ -95,8 +96,8 @@ export class WsEventCommunicator {
   socketListen(ws: WebSocket) {
     const pins = {}
     // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
-    ws.onerror = (err) => {
-      console.error('++++ ws had an error', err)
+    ws.onerror = (event) => {
+      this.$error.next((event as any).error)
     }
 
     ws.onclose = () => {

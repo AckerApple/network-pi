@@ -30,6 +30,7 @@ class WsEventCommunicator {
         this.loadCount = 0;
         this.promises = {};
         this.$onopen = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.$error = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.$onmessage = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.$reconnecting = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
     }
@@ -94,8 +95,8 @@ class WsEventCommunicator {
     socketListen(ws) {
         const pins = {};
         // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
-        ws.onerror = (err) => {
-            console.error('++++ ws had an error', err);
+        ws.onerror = (event) => {
+            this.$error.next(event.error);
         };
         ws.onclose = () => {
             delete this.ws;
