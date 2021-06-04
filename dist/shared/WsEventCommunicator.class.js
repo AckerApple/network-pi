@@ -24,7 +24,7 @@ class WsEventCommunicator {
     }
     initSocket() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ws = new WebSocket(this.url);
+            const ws = new Ws(this.url);
             this.socketListen(ws);
         });
     }

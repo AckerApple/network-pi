@@ -34,7 +34,7 @@ export class WsEventCommunicator {
   }
 
   async initSocket() {
-    const ws = new WebSocket( this.url )
+    const ws = new (Ws as any)( this.url )
     this.socketListen(ws)
   }
 
