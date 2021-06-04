@@ -10,16 +10,18 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WsEventCommunicator", function() { return WsEventCommunicator; });
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ "../node_modules/rxjs/dist/esm/index.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "../node_modules/rxjs/dist/esm/index.js");
+
 
 class WsEventCommunicator {
     constructor(url) {
         this.url = url;
         this.loadCount = 0;
         this.promises = {};
-        this.$onopen = new rxjs__WEBPACK_IMPORTED_MODULE_0__["Subject"]();
-        this.$onmessage = new rxjs__WEBPACK_IMPORTED_MODULE_0__["Subject"]();
-        this.$reconnecting = new rxjs__WEBPACK_IMPORTED_MODULE_0__["Subject"]();
+        this.$onopen = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.$onmessage = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.$reconnecting = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
     }
     connect() {
         if (this.ws) {
@@ -30,8 +32,13 @@ class WsEventCommunicator {
         this.initSocket();
     }
     initSocket() {
-        const ws = new WebSocket(this.url);
-        this.socketListen(ws);
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            if (!WebSocket) {
+                const WebSocket = yield __webpack_require__.e(/*! import() | ws */ "ws").then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7));
+            }
+            const ws = new WebSocket(this.url);
+            this.socketListen(ws);
+        });
     }
     disconnect() {
         this.disconnectAsked = true;

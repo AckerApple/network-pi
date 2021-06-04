@@ -241,7 +241,7 @@ export class AppComponent {
 
     pin.blink = setInterval(() => {
       this.togglePin(pin)
-    }, 500)
+    }, 500) as any
   }
 
   sendTerminalCommand(command: string) {
@@ -299,10 +299,10 @@ export class AppComponent {
             this.togglePin(this.config.pins[key])
           }, 100)
         }, i * 100)
-      });
+      })
 
       direction = direction ? 0 : 1
-    }, pinCount * 200)
+    }, pinCount * 200) as any
   }
 
   addPin() {

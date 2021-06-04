@@ -18,7 +18,7 @@ export declare class WsEventCommunicator {
     $reconnecting: Subject<void>;
     constructor(url?: string);
     connect(): void;
-    initSocket(): void;
+    initSocket(): Promise<void>;
     disconnect(): void;
     reconnect(): void;
     sendWaitMessageResponse<T>(message: WsMessage): Promise<T>;

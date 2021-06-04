@@ -1,6 +1,5 @@
 import { WsMessage } from "./types";
 import { Subject } from "rxjs";
-
 export class WsEventCommunicator {
   reconnectTimer: any
   disconnectAsked!: boolean
@@ -30,7 +29,10 @@ export class WsEventCommunicator {
     this.initSocket()
   }
 
-  initSocket() {
+  async initSocket() {
+    if (!WebSocket) {
+      const WebSocket = await import('ws')
+    }
     const ws = new WebSocket( this.url )
     this.socketListen(ws)
   }

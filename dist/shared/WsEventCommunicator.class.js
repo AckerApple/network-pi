@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WsEventCommunicator = void 0;
+const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
 class WsEventCommunicator {
     constructor(url) {
@@ -20,8 +21,13 @@ class WsEventCommunicator {
         this.initSocket();
     }
     initSocket() {
-        const ws = new WebSocket(this.url);
-        this.socketListen(ws);
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (!WebSocket) {
+                const WebSocket = yield Promise.resolve().then(() => require('ws'));
+            }
+            const ws = new WebSocket(this.url);
+            this.socketListen(ws);
+        });
     }
     disconnect() {
         this.disconnectAsked = true;
