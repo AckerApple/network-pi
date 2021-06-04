@@ -4,13 +4,13 @@ exports.WsEventCommunicator = void 0;
 const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
 const isWsNeeded = typeof WebSocket === 'undefined';
-function getWs(url) {
+function getWs() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (isWsNeeded) {
             const ws = yield Promise.resolve().then(() => require('ws'));
-            return new ws(url);
+            return ws;
         }
-        return new WebSocket(url);
+        return WebSocket;
     });
 }
 class WsEventCommunicator {
@@ -34,8 +34,13 @@ class WsEventCommunicator {
     }
     initSocket() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const ws = yield getWs(this.url);
-            this.socketListen(ws);
+            try {
+                const ws = new (yield getWs())(this.url);
+                this.socketListen(ws);
+            }
+            catch (err) {
+                console.error('failed to init socket', err);
+            }
         });
     }
     disconnect() {
@@ -78,6 +83,9 @@ class WsEventCommunicator {
     socketListen(ws) {
         const pins = {};
         // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
+        ws.onerror = (err) => {
+            console.error('++++ ws had an error', err);
+        };
         ws.onclose = () => {
             delete this.ws;
             if (!this.reconnectTimer && !this.disconnectAsked) {

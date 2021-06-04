@@ -2,13 +2,13 @@ import { WsMessage } from "./types";
 import { Subject } from "rxjs";
 
 const isWsNeeded = typeof WebSocket === 'undefined'
-async function getWs(url): Promise<WebSocket> {
+async function getWs(): Promise<any> {
   if (isWsNeeded) {
     const ws = await import('ws')
-    return new ws(url) as any
+    return ws as any
   }
 
-  return new WebSocket(url)
+  return WebSocket as any
 }
 
 export class WsEventCommunicator {
@@ -41,8 +41,12 @@ export class WsEventCommunicator {
   }
 
   async initSocket() {
-    const ws = await getWs( this.url )
-    this.socketListen(ws)
+    try {
+      const ws = new (await getWs())(this.url)
+      this.socketListen(ws)
+    } catch (err) {
+      console.error('failed to init socket', err);
+    }
   }
 
   disconnect() {
@@ -91,6 +95,9 @@ export class WsEventCommunicator {
   socketListen(ws: WebSocket) {
     const pins = {}
     // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
+    ws.onerror = (err) => {
+      console.error('++++ ws had an error', err)
+    }
 
     ws.onclose = () => {
       delete this.ws

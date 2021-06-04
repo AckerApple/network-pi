@@ -15,13 +15,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const isWsNeeded = typeof WebSocket === 'undefined';
-function getWs(url) {
+function getWs() {
     return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
         if (isWsNeeded) {
             const ws = yield __webpack_require__.e(/*! import() | ws */ "ws").then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7));
-            return new ws(url);
+            return ws;
         }
-        return new WebSocket(url);
+        return WebSocket;
     });
 }
 class WsEventCommunicator {
@@ -45,8 +45,13 @@ class WsEventCommunicator {
     }
     initSocket() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const ws = yield getWs(this.url);
-            this.socketListen(ws);
+            try {
+                const ws = new (yield getWs())(this.url);
+                this.socketListen(ws);
+            }
+            catch (err) {
+                console.error('failed to init socket', err);
+            }
         });
     }
     disconnect() {
@@ -89,6 +94,9 @@ class WsEventCommunicator {
     socketListen(ws) {
         const pins = {};
         // const pin0 = {num:0, type:'OUTPUT', mode:'low'}
+        ws.onerror = (err) => {
+            console.error('++++ ws had an error', err);
+        };
         ws.onclose = () => {
             delete this.ws;
             if (!this.reconnectTimer && !this.disconnectAsked) {
