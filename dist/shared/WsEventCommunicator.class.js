@@ -59,14 +59,14 @@ class WsEventCommunicator {
         });
     }
     keepRetryingConnect() {
-        console.log('Attempting to reconnect...');
+        console.log(`Trying ws connection to ${this.url}...`);
         this.reconnectTimer = setInterval(() => {
             this.$reconnecting.next();
             try {
                 this.connect();
             }
             catch (err) {
-                console.warn(`Failed to trying connection to ${this.url}`);
+                console.warn(`Failed trying connection to ${this.url}`);
             }
         }, 5000);
     }

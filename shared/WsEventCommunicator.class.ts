@@ -71,7 +71,8 @@ export class WsEventCommunicator {
   }
 
   keepRetryingConnect() {
-    console.log('Attempting to reconnect...')
+    console.log(`Trying ws connection to ${this.url}...`)
+
     this.reconnectTimer = setInterval(() => {
       this.$reconnecting.next()
       try {
