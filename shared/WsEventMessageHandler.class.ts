@@ -20,9 +20,10 @@ export class WsEventMessageHandler extends WsEventProcessor {
 
     try {
       this[data.eventType].call(this, data)
-    } catch (error) {
+    } catch (err) {
       this.send('log', {
-        message: `failed command ${data.eventType}`, error
+        message: `failed command ${data.eventType}`,
+        error: Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
       }, data)
     }
   }
