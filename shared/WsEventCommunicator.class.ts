@@ -76,17 +76,17 @@ export class WsEventCommunicator {
   }
 
   keepRetryingConnect() {
-    console.log(`Trying ws connection to ${this.url}...`)
+    // console.log(`Trying ws connection to ${this.url}...`)
 
     this.reconnectTimer = setInterval(async () => {
       this.$reconnecting.next()
       try {
-        console.log('running connect loop')
+        // console.log('running connect loop')
         await this.connect()
           .catch((err: Error) =>
             console.warn(`Failed connection try to ${this.url}`, err)
           )
-        console.log('sent connect loop')
+        // console.log('sent connect loop')
       } catch (err) {
         console.warn(`Failed trying connection to ${this.url}`, err)
       }

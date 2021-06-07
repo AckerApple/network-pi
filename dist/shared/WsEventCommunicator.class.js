@@ -67,14 +67,14 @@ class WsEventCommunicator {
         });
     }
     keepRetryingConnect() {
-        console.log(`Trying ws connection to ${this.url}...`);
+        // console.log(`Trying ws connection to ${this.url}...`)
         this.reconnectTimer = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.$reconnecting.next();
             try {
-                console.log('running connect loop');
+                // console.log('running connect loop')
                 yield this.connect()
                     .catch((err) => console.warn(`Failed connection try to ${this.url}`, err));
-                console.log('sent connect loop');
+                // console.log('sent connect loop')
             }
             catch (err) {
                 console.warn(`Failed trying connection to ${this.url}`, err);
