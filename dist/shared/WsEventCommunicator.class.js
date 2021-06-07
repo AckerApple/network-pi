@@ -97,6 +97,7 @@ class WsEventCommunicator {
         };
         ws.onopen = () => {
             clearInterval(this.reconnectTimer);
+            delete this.reconnectTimer;
             this.ws = ws; // only when connected successfully do we set
             this.$onopen.next(this.ws);
         };
