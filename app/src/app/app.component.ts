@@ -1,7 +1,8 @@
+import { name, version } from "../../../package.json"
 import { eventTypes, PinState, ServerPinsSummary, WsMessage } from "../../../shared/types";
 import { WsEventCommunicator } from "../../../shared/WsEventCommunicator.class";
 import { Component } from '@angular/core';
-import { Subscription } from "rxjs";
+import { fromEventPattern, Subscription } from "rxjs";
 import { Systeminformation } from "systeminformation";
 
 declare const ws: any
@@ -43,6 +44,8 @@ interface WifiData {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  name = name
+  version = version
   subs = new Subscription()
   strobePins: number
 
