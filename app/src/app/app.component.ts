@@ -49,6 +49,14 @@ export class AppComponent {
   subs = new Subscription()
   strobePins: number
 
+  fetchStatus: {[index:string]: any} = {
+    bluetoothDevices: 0,
+    audioDevices: 0,
+    networkInterfaces: 0,
+    wifiNetworks: 0,
+    wifiConnections: 0,
+  }
+
   config: Config = this.loadLocalStorage() || {
     wsUrl, pins: {}
   }
@@ -108,25 +116,35 @@ export class AppComponent {
   }
 
   async fetchBluetoothDevices() {
+    ++this.fetchStatus.bluetoothDevices
     this.bluetoothDevices = await this.wsComm.sendWaitResponse('bluetoothDevices')
+    --this.fetchStatus.bluetoothDevices
   }
 
   async fetchAudioDevices() {
+    ++this.fetchStatus.audioDevices
     this.audioDevices = await this.wsComm.sendWaitResponse('audioDevices')
+    --this.fetchStatus.audioDevices
   }
 
   async fetchNetworkInterfaces() {
+    ++this.fetchStatus.networkInterfaces
     this.wifi.networkInterfaces = await this.wsComm.sendWaitResponse('networkInterfaces')
+    --this.fetchStatus.networkInterfaces
   }
 
   async fetchWifiNetworks() {
+    ++this.fetchStatus.wifiNetworks
     this.wifi.wifiNetworks = await this.wsComm.sendWaitResponse('wifiNetworks')
     this.paramWifiNetworkIndex()
+    --this.fetchStatus.wifiNetworks
   }
 
   async fetchWifiConnections() {
+    ++this.fetchStatus.wifiConnections
     this.wifi.wifiConnections = await this.wsComm.sendWaitResponse('wifiConnections')
     this.paramWifiNetworkIndex()
+    --this.fetchStatus.wifiConnections
   }
 
   paramWifiNetworkIndex() {

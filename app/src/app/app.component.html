@@ -350,7 +350,7 @@
         </div>
 
         <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart">
+          <div class="flex-apart" [class.opacity-half]="fetchStatus.networkInterfaces">
             <h3>🔌&nbsp;&nbsp;Network Interfaces</h3>
             <div>
               <a (click)="fetchNetworkInterfaces()">🔄</a>
@@ -362,7 +362,7 @@
         </div>
 
         <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart">
+          <div class="flex-apart" [class.opacity-half]="fetchStatus.wifiConnections">
             <h3>📶&nbsp;&nbsp;WIFI Connections</h3>
             <div>
               <a (click)="fetchWifiConnections()">🔄</a>
@@ -374,7 +374,7 @@
         </div>
 
         <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart">
+          <div class="flex-apart" [class.opacity-half]="fetchStatus.wifiNetworks">
             <h3 class="flex-1">📡&nbsp;&nbsp;WIFI Networks</h3>
             <div class="margin-h">
               <select *ngIf="wifi.wifiNetworks?.length" (change)="wifi.viewNetworkIndex = $event.target.options[$event.target.selectedIndex].value">
@@ -406,14 +406,20 @@
         </div>
 
         <div class="flex-1 bg-grey-3x">
-          <h3>⌨️&nbsp;&nbsp;Bluetooth Devices</h3>
+          <div class="flex-apart" [class.opacity-half]="fetchStatus.bluetoothDevices">
+            <h3>⌨️&nbsp;&nbsp;Bluetooth Devices</h3>
+            <a (click)="fetchBluetoothDevices()">🔄</a>
+          </div>
           <div class="width-full flex min-width-300">
             <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{bluetoothDevices | json}}</textarea>
           </div>
         </div>
 
         <div class="flex-1 bg-grey-3x">
-          <h3>🎧&nbsp;&nbsp;Audio Devices</h3>
+          <div class="flex-apart" [class.opacity-half]="fetchStatus.audioDevices">
+            <h3>🎧&nbsp;&nbsp;Audio Devices</h3>
+            <a (click)="fetchAudioDevices()">🔄</a>
+          </div>
           <div class="width-full flex min-width-300">
             <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{audioDevices | json}}</textarea>
           </div>
