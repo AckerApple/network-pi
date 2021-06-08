@@ -2,7 +2,12 @@ const { exec } = require("child_process")
 import { WsMessage } from "../shared/types"
 import { setPins, pins } from "./index.pins"
 import { WsEventMessageHandler } from "../shared/WsEventMessageHandler.class"
-import { networkInterfaces, bluetoothDevices, wifiConnections, wifiNetworks } from "systeminformation"
+import {
+  networkInterfaces,
+  bluetoothDevices,
+  wifiConnections,
+  wifiNetworks, audio,
+} from "systeminformation"
 import * as wifi from "node-wifi"
 
 export class WsPinConnectionSwitch extends WsEventMessageHandler {
@@ -32,6 +37,11 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
   async bluetoothDevices(data: WsMessage) {
     const results = await bluetoothDevices()
     this.send('bluetoothDevices', results, data)
+  }
+
+  async audioDevices(data: WsMessage) {
+    const results = await audio()
+    this.send('audioDevices', results, data)
   }
 
   async networkInterfaces(data: WsMessage) {

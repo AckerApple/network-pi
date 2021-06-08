@@ -7,6 +7,7 @@ export declare class WsPinConnectionSwitch extends WsEventMessageHandler {
     wifiNetworks(data: WsMessage): Promise<void>;
     wifiConnections(data: WsMessage): Promise<void>;
     bluetoothDevices(data: WsMessage): Promise<void>;
+    audioDevices(data: WsMessage): Promise<void>;
     networkInterfaces(data: WsMessage): Promise<void>;
     wifiConnect(data: WsMessage): Promise<void>;
 }

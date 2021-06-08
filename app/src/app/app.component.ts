@@ -60,6 +60,7 @@ export class AppComponent {
 
   wifi: WifiData = {}
   bluetoothDevices?: Systeminformation.BluetoothDeviceData[]
+  audioDevices?: Systeminformation.AudioData[]
 
   constructor() {
     console.log('starting')
@@ -84,6 +85,7 @@ export class AppComponent {
     this.fetchWifiConnections()
     this.fetchWifiNetworks()
     this.fetchBluetoothDevices()
+    this.fetchAudioDevices()
   }
 
   updateWsUrl(url: string) {
@@ -104,6 +106,10 @@ export class AppComponent {
 
   async fetchBluetoothDevices() {
     this.bluetoothDevices = await this.wsComm.sendWaitResponse('bluetoothDevices')
+  }
+
+  async fetchAudioDevices() {
+    this.audioDevices = await this.wsComm.sendWaitResponse('audioDevices')
   }
 
   async fetchNetworkInterfaces() {

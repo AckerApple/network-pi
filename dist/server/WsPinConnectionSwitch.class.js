@@ -38,6 +38,12 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
             this.send('bluetoothDevices', results, data);
         });
     }
+    audioDevices(data) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const results = yield systeminformation_1.audio();
+            this.send('audioDevices', results, data);
+        });
+    }
     networkInterfaces(data) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const results = yield systeminformation_1.networkInterfaces();
