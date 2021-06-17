@@ -32,22 +32,22 @@ export function startHttpWebSocketServer({
 }
 
 export function addWebSocketToHttpServer(server: http.Server): WebSocket.Server {
-  console.log('upgrading http server...')
+  // console.log('upgrading http server...')
   const wss = new WebSocket.Server({noServer: true})
   server.on('upgrade', (request, socket, head) => {
-    console.log('upgraded http server')
+    // console.log('upgraded http server')
     upgradeHttpServerToWebSocket(request, socket, head, wss)
   })
   return wss
 }
 
 export function upgradeHttpServerToWebSocket(request, socket, head, wss: WebSocket.Server) {
-  console.log('starting websocket server...')
+  // console.log('starting websocket server...')
   const pathname = url.parse(request.url).pathname;
 
   if (pathname === '/ws') {
     wss.handleUpgrade(request, socket, head, function done(ws) {
-      console.log('ws connection created on path /ws')
+      // console.log('ws connection created on path /ws')
       wss.emit('connection', ws, request)
     })
   } else {

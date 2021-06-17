@@ -63,7 +63,7 @@ export function setPin(data: pin){
     return setOutputPin(pinClasses[data.num] as OutputPin, data)
   }
 
-  console.log('set pin', data)
+  // console.log('set pin', data)
 }
 
 export function isPinStateMatched(pin: pin, matchPin: pin) {
@@ -79,12 +79,12 @@ export function setOutputPin(pinClass: OutputPin, data: pin) {
   //mode change
   switch(data.mode){
     case 'HIGH':
-      console.log(data.num, data.mode)
+      // console.log(data.num, data.mode)
       pinClass.high()
       break;
 
     case 'LOW':
-      console.log(data.num, data.mode)
+      // console.log(data.num, data.mode)
       pinClass.low()
       break;
   }

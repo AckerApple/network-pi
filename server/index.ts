@@ -18,7 +18,6 @@ export interface pins {
 }
 
 const basePath = __dirname
-console.log('basePath',basePath)
 
 const servers = startHttpWebSocketServer({
   port, host,
@@ -26,11 +25,10 @@ const servers = startHttpWebSocketServer({
 })
 
 servers.wss.on('connection', ws => {
-  console.log('connection')
-
   const messageHandler = new WsPinConnectionSwitch(ws)
   new WsEventProcessor(ws).monitorMessages().$message.subscribe(msg =>
     messageHandler.processWsEventMessage(msg)
   )
 })
-servers.wss.on('open', (ws) => console.log('opened'))
+
+// servers.wss.on('open', (ws) => console.log('opened'))

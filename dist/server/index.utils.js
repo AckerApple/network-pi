@@ -24,21 +24,21 @@ function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFil
 }
 exports.startHttpWebSocketServer = startHttpWebSocketServer;
 function addWebSocketToHttpServer(server) {
-    console.log('upgrading http server...');
+    // console.log('upgrading http server...')
     const wss = new WebSocket.Server({ noServer: true });
     server.on('upgrade', (request, socket, head) => {
-        console.log('upgraded http server');
+        // console.log('upgraded http server')
         upgradeHttpServerToWebSocket(request, socket, head, wss);
     });
     return wss;
 }
 exports.addWebSocketToHttpServer = addWebSocketToHttpServer;
 function upgradeHttpServerToWebSocket(request, socket, head, wss) {
-    console.log('starting websocket server...');
+    // console.log('starting websocket server...')
     const pathname = url.parse(request.url).pathname;
     if (pathname === '/ws') {
         wss.handleUpgrade(request, socket, head, function done(ws) {
-            console.log('ws connection created on path /ws');
+            // console.log('ws connection created on path /ws')
             wss.emit('connection', ws, request);
         });
     }

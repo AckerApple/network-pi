@@ -1,11 +1,11 @@
 {
   "name": "network-pi",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Acker testing platform for pi controlled over the network",
   "main": "index.js",
   "scripts": {
     "save": "npm run build && npm run save:server",
-    "save:server": "git add . && git commit -m \"update\" && git push",
+    "save:server": "npm --no-git-tag-version version patch && git add . && git commit -m \"update\" && git push",
     "serve:ng": "cd app && ng serve ./app/dist/network-pi-webapp",
     "start": "npm-run-all --parallel start:server start:webapp",
     "start:pi": "npm-run-all --parallel start:server:pi start:webapp:pi",

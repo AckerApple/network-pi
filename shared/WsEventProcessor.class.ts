@@ -21,7 +21,7 @@ export class WsEventProcessor {
   constructor(public ws: WebSocket) {}
 
   monitorMessages() {
-    console.log('listening to messages on socket connection...')
+    // console.log('listening to messages on socket connection...')
     this.ws.on('message', (dataString:string) => this.onMessage(dataString))
     return this
   }

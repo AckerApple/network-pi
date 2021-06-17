@@ -64,7 +64,7 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
                 this.wifiConnections(data);
                 return x;
             });
-            console.log('result', result);
+            console.log('wifi result', result);
         });
     }
 }

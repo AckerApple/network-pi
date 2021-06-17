@@ -65,7 +65,7 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
         return x
       })
 
-    console.log('result', result)
+    console.log('wifi result', result)
   }
 }
 

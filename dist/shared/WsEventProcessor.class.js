@@ -23,7 +23,7 @@ class WsEventProcessor {
         this.$message = new rxjs_1.Subject();
     }
     monitorMessages() {
-        console.log('listening to messages on socket connection...');
+        // console.log('listening to messages on socket connection...')
         this.ws.on('message', (dataString) => this.onMessage(dataString));
         return this;
     }
