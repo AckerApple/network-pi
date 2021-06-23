@@ -15,6 +15,7 @@ const servers = index_utils_1.startHttpWebSocketServer({
     httpStaticFilePath: path.join(__dirname, '../app/dist/network-pi-webapp')
 });
 servers.wss.on('connection', ws => {
+    console.log('ws connection');
     const messageHandler = new WsPinConnectionSwitch_class_1.WsPinConnectionSwitch(ws);
     new WsEventProcessor_class_1.WsEventProcessor(ws).monitorMessages().$message.subscribe(msg => messageHandler.processWsEventMessage(msg));
 });

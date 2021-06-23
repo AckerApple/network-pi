@@ -25,6 +25,7 @@ const servers = startHttpWebSocketServer({
 })
 
 servers.wss.on('connection', ws => {
+  console.log('ws connection')
   const messageHandler = new WsPinConnectionSwitch(ws)
   new WsEventProcessor(ws).monitorMessages().$message.subscribe(msg =>
     messageHandler.processWsEventMessage(msg)

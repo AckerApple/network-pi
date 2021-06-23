@@ -317,10 +317,10 @@
           placeholder="Web Socket URL"
         />
         <button style="background-color: red;" *ngIf="wsComm.ws" type="button"
-          (click)="disconnect()"
+          (click)="wsComm.disconnect()"
         >disconnect</button>
         <button style="background-color: orange;" *ngIf="wsComm.ws" type="button"
-          (click)="reconnect()"
+          (click)="wsComm.reconnect()"
         >reconnect</button>
         <button *ngIf="!wsComm.ws" type="submit">connect</button>
       </form>
