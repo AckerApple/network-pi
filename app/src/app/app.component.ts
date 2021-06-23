@@ -2,7 +2,7 @@ import { name, version } from "../../../package.json"
 import { eventTypes, PinState, ServerPinsSummary, WsMessage } from "../../../shared/types";
 import { WsEventCommunicator } from "../../../shared/WsEventCommunicator.class";
 import { Component } from '@angular/core';
-import { fromEventPattern, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { Systeminformation } from "systeminformation";
 
 declare const ws: any
@@ -362,5 +362,15 @@ export class AppComponent {
 
   send(eventType: eventTypes, data?: any) {
     this.wsComm.send(eventType, data)
+  }
+
+  allPinsHigh() {
+    Object.values(this.config.pins).forEach(pin => pin.request.mode = "HIGH")
+    this.submitPins()
+  }
+
+  allPinsLow() {
+    Object.values(this.config.pins).forEach(pin => pin.request.mode = "LOW")
+    this.submitPins()
   }
 }

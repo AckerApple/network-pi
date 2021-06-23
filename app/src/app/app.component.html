@@ -332,99 +332,6 @@
 
   <ng-container *ngIf="wsComm.ws">
     <form (submit)="submitPins()" action="javascript:" style="display: block;width: 100%;">
-      <div *ngIf="config.debug" class="flex-wrap child-margin child-pad">
-        <div class="flex-1 bg-grey-3x">
-          <h3>PINS</h3>
-          <div class="width-full flex min-width-300">
-            <textarea wrap="off" style="flex-grow:1" rows="30"
-            (keyup) ="setPinsByString($event.target.value)"
-            >{{config.pins | json}}</textarea>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey-3x">
-          <h3>MESSAGES</h3>
-          <div class="width-full flex min-width-300">
-            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wsComm.lastMessage | json}}</textarea>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart" [class.opacity-half]="fetchStatus.networkInterfaces">
-            <h3>🔌&nbsp;&nbsp;Network Interfaces</h3>
-            <div>
-              <a (click)="fetchNetworkInterfaces()">🔄</a>
-            </div>
-          </div>
-          <div class="width-full flex min-width-300">
-            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.networkInterfaces | json}}</textarea>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart" [class.opacity-half]="fetchStatus.wifiConnections">
-            <h3>📶&nbsp;&nbsp;WIFI Connections</h3>
-            <div>
-              <a (click)="fetchWifiConnections()">🔄</a>
-            </div>
-          </div>
-          <div class="width-full flex min-width-300">
-            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.wifiConnections | json}}</textarea>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart" [class.opacity-half]="fetchStatus.wifiNetworks">
-            <h3 class="flex-1">📡&nbsp;&nbsp;WIFI Networks</h3>
-            <div class="margin-h">
-              <select *ngIf="wifi.wifiNetworks?.length" (change)="wifi.viewNetworkIndex = $event.target.options[$event.target.selectedIndex].value">
-                <option *ngFor="let wifiNetwork of wifi.wifiNetworks;let index=index" [value]="index"
-                  [selected]="index === wifi.viewNetworkIndex"
-                >{{wifiNetwork.ssid}}</option>
-              </select>
-            </div>
-            <div>
-              <a (click)="fetchWifiNetworks()">🔄</a>
-            </div>
-          </div>
-          <div *ngIf="wifi.viewNetworkIndex!=undefined">
-            <div class="width-full flex min-width-300">
-              <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.wifiNetworks[wifi.viewNetworkIndex] | json}}</textarea>
-            </div>
-            <div class="flex-right">
-              <select (change)="wifi.tempIface = $event.target.value">
-                <option *ngFor="let item of wifi.networkInterfaces" [value]="item.iface"
-                  [selected] = "wifi.tempIface === item.iface"
-                >{{item.type}} - {{item.iface}}</option>
-              </select>
-              <input type="password" placeholder="wifi password" (change)="wifi.tempPassword = $event.target.value" />
-              <button type="button" (click)="wifiConnect()">
-                connect
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart" [class.opacity-half]="fetchStatus.bluetoothDevices">
-            <h3>⌨️&nbsp;&nbsp;Bluetooth Devices</h3>
-            <a (click)="fetchBluetoothDevices()">🔄</a>
-          </div>
-          <div class="width-full flex min-width-300">
-            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{bluetoothDevices | json}}</textarea>
-          </div>
-        </div>
-
-        <div class="flex-1 bg-grey-3x">
-          <div class="flex-apart" [class.opacity-half]="fetchStatus.audioDevices">
-            <h3>🎧&nbsp;&nbsp;Audio Devices</h3>
-            <a (click)="fetchAudioDevices()">🔄</a>
-          </div>
-          <div class="width-full flex min-width-300">
-            <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{audioDevices | json}}</textarea>
-          </div>
-        </div>
-      </div>
       <div class="flex-wrap child-pad-smx">
         <button type="button" (click)="config.debug=!config.debug;saveConfig()" class="flex-1 text-2x"
           [style.background-color] = "config.debug ? 'green' : undefined"
@@ -436,9 +343,17 @@
         >STROBE PINS</button>
         <button type="button" class="flex-1 text-2x" (click)="addPin()"
         >ADD PIN</button>
+        <button type="button" class="flex-1 text-2x" (click)="allPinsHigh()"
+        >ALL HIGH</button>
+        <button type="button" class="flex-1 text-2x" (click)="allPinsLow()"
+        >ALL LOW</button>
         <button type="submit" class="flex-1 text-2x"
         >SAVE PINS</button>
       </div>
+
+      <ng-container *ngIf="config.debug">
+        <ng-container *ngTemplateOutlet="debugArea"></ng-container>
+      </ng-container>
     </form>
 
     <div *ngIf="loadCount">... loading {{loadCount}} items ...</div>
@@ -512,6 +427,102 @@
       <button style="font-size:1.4em;" type="button"
         (click)="deletePin(pin)"
       >🗑️</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #debugArea>
+  <div class="flex-wrap child-margin child-pad">
+    <div class="flex-1 bg-grey-3x">
+      <h3>PINS</h3>
+      <div class="width-full flex min-width-300">
+        <textarea wrap="off" style="flex-grow:1" rows="30"
+        (keyup) ="setPinsByString($event.target.value)"
+        >{{config.pins | json}}</textarea>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-grey-3x">
+      <h3>MESSAGES</h3>
+      <div class="width-full flex min-width-300">
+        <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wsComm.lastMessage | json}}</textarea>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-grey-3x">
+      <div class="flex-apart" [class.opacity-half]="fetchStatus.networkInterfaces">
+        <h3>🔌&nbsp;&nbsp;Network Interfaces</h3>
+        <div>
+          <a (click)="fetchNetworkInterfaces()">🔄</a>
+        </div>
+      </div>
+      <div class="width-full flex min-width-300">
+        <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.networkInterfaces | json}}</textarea>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-grey-3x">
+      <div class="flex-apart" [class.opacity-half]="fetchStatus.wifiConnections">
+        <h3>📶&nbsp;&nbsp;WIFI Connections</h3>
+        <div>
+          <a (click)="fetchWifiConnections()">🔄</a>
+        </div>
+      </div>
+      <div class="width-full flex min-width-300">
+        <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.wifiConnections | json}}</textarea>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-grey-3x">
+      <div class="flex-apart" [class.opacity-half]="fetchStatus.wifiNetworks">
+        <h3 class="flex-1">📡&nbsp;&nbsp;WIFI Networks</h3>
+        <div class="margin-h">
+          <select *ngIf="wifi.wifiNetworks?.length" (change)="wifi.viewNetworkIndex = $event.target.options[$event.target.selectedIndex].value">
+            <option *ngFor="let wifiNetwork of wifi.wifiNetworks;let index=index" [value]="index"
+              [selected]="index === wifi.viewNetworkIndex"
+            >{{wifiNetwork.ssid}}</option>
+          </select>
+        </div>
+        <div>
+          <a (click)="fetchWifiNetworks()">🔄</a>
+        </div>
+      </div>
+      <div *ngIf="wifi.viewNetworkIndex!=undefined">
+        <div class="width-full flex min-width-300">
+          <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{wifi.wifiNetworks[wifi.viewNetworkIndex] | json}}</textarea>
+        </div>
+        <div class="flex-right">
+          <select (change)="wifi.tempIface = $event.target.value">
+            <option *ngFor="let item of wifi.networkInterfaces" [value]="item.iface"
+              [selected] = "wifi.tempIface === item.iface"
+            >{{item.type}} - {{item.iface}}</option>
+          </select>
+          <input type="password" placeholder="wifi password" (change)="wifi.tempPassword = $event.target.value" />
+          <button type="button" (click)="wifiConnect()">
+            connect
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-grey-3x">
+      <div class="flex-apart" [class.opacity-half]="fetchStatus.bluetoothDevices">
+        <h3>⌨️&nbsp;&nbsp;Bluetooth Devices</h3>
+        <a (click)="fetchBluetoothDevices()">🔄</a>
+      </div>
+      <div class="width-full flex min-width-300">
+        <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{bluetoothDevices | json}}</textarea>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-grey-3x">
+      <div class="flex-apart" [class.opacity-half]="fetchStatus.audioDevices">
+        <h3>🎧&nbsp;&nbsp;Audio Devices</h3>
+        <a (click)="fetchAudioDevices()">🔄</a>
+      </div>
+      <div class="width-full flex min-width-300">
+        <textarea disabled wrap="off" style="flex-grow:1" rows="30">{{audioDevices | json}}</textarea>
+      </div>
     </div>
   </div>
 </ng-template>
