@@ -95,7 +95,7 @@ export class AppComponent {
     this.fetchNetworkInterfaces()
     this.fetchWifiConnections()
     this.fetchWifiNetworks()
-    this.fetchBluetoothDevices()
+    // this.fetchBluetoothDevices()
     this.fetchAudioDevices()
   }
 
