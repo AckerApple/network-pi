@@ -11,6 +11,7 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
     setPins(data) {
         index_pins_1.setPins(data.data);
         this.send('pins', index_pins_1.pins, data); // echo
+        console.log('ws setPins');
     }
     getPins(data) {
         this.send('pins', index_pins_1.pins, data);
@@ -34,8 +35,14 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
     }
     bluetoothDevices(data) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const results = yield systeminformation_1.bluetoothDevices();
-            this.send('bluetoothDevices', results, data);
+            try {
+                const results = yield systeminformation_1.bluetoothDevices();
+                this.send('bluetoothDevices', results, data);
+            }
+            catch (err) {
+                console.error('error fetching bluetooth devices', err);
+                this.send('bluetoothDevices', [], data);
+            }
         });
     }
     audioDevices(data) {

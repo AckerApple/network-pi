@@ -14,6 +14,7 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
   setPins(data: WsMessage) {
     setPins( data.data )
     this.send('pins', pins, data) // echo
+    console.log('ws setPins')
   }
 
   getPins(data: WsMessage) {
@@ -35,8 +36,13 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
   }
 
   async bluetoothDevices(data: WsMessage) {
-    const results = await bluetoothDevices()
-    this.send('bluetoothDevices', results, data)
+    try {
+      const results = await bluetoothDevices()
+      this.send('bluetoothDevices', results, data)
+    } catch (err) {
+      console.error('error fetching bluetooth devices', err)
+      this.send('bluetoothDevices', [], data)
+    }
   }
 
   async audioDevices(data: WsMessage) {
