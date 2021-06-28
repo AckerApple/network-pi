@@ -1,6 +1,8 @@
 import { WsMessage } from "./types";
 import { Subject } from "rxjs";
 
+declare const WebSocket
+
 const isWsNeeded = typeof WebSocket === 'undefined'
 async function getWs(): Promise<any> {
   if (isWsNeeded) {
