@@ -12,7 +12,9 @@ const port = nconf.get('port') || 3000;
 const basePath = __dirname;
 const servers = index_utils_1.startHttpWebSocketServer({
     port, host,
-    httpStaticFilePath: path.join(__dirname, '../app/dist/network-pi-webapp')
+    httpStaticFilePaths: [
+        path.join(__dirname, '../app/dist/network-pi-webapp')
+    ]
 });
 servers.wss.on('connection', ws => {
     console.log('ws connection');

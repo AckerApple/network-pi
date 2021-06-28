@@ -6,11 +6,10 @@ import * as url from "url"
 export function startHttpWebSocketServer({
   port = 3000,
   host = '0.0.0.0',
-  httpStaticFilePath
-}: {port: number, host: string, httpStaticFilePath: string}
+  httpStaticFilePaths
+}: {port: number, host: string, httpStaticFilePaths: string[]}
 ): {http:http.Server, wss: WebSocket.Server} {
-  console.log('serving static files from', httpStaticFilePath)
-  var file = new(nodeStatic.Server)(httpStaticFilePath);
+  console.log('serving static files from', httpStaticFilePaths)
 
   const server = http.createServer((req,res)=>{
     console.log('request', req.url)
@@ -19,7 +18,10 @@ export function startHttpWebSocketServer({
       query : url.parse(req.url, true).query
     }
 
-    file.serve(req, res);
+    httpStaticFilePaths.forEach(path => {
+      var file = new(nodeStatic.Server)(path)
+      file.serve(req, res)
+    })
   })
 
   const wss = addWebSocketToHttpServer(server)

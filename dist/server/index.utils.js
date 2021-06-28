@@ -5,16 +5,18 @@ const nodeStatic = require('node-static');
 const WebSocket = require("ws");
 const http = require("http");
 const url = require("url");
-function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePath }) {
-    console.log('serving static files from', httpStaticFilePath);
-    var file = new (nodeStatic.Server)(httpStaticFilePath);
+function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePaths }) {
+    console.log('serving static files from', httpStaticFilePaths);
     const server = http.createServer((req, res) => {
         console.log('request', req.url);
         const rUrl = {
             path: req.url.split('?').shift(),
             query: url.parse(req.url, true).query
         };
-        file.serve(req, res);
+        httpStaticFilePaths.forEach(path => {
+            var file = new (nodeStatic.Server)(path);
+            file.serve(req, res);
+        });
     });
     const wss = addWebSocketToHttpServer(server);
     server.listen(port, host, () => {

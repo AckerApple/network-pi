@@ -1,10 +1,10 @@
 /// <reference types="node" />
 import * as WebSocket from "ws";
 import * as http from "http";
-export declare function startHttpWebSocketServer({ port, host, httpStaticFilePath }: {
+export declare function startHttpWebSocketServer({ port, host, httpStaticFilePaths }: {
     port: number;
     host: string;
-    httpStaticFilePath: string;
+    httpStaticFilePaths: string[];
 }): {
     http: http.Server;
     wss: WebSocket.Server;
