@@ -6,6 +6,11 @@ import { Subject } from "rxjs";
 export class SocketSwitch {
   constructor(public wss: WebSocket.Server) {}
 
+  sendCleanToAll(eventType: string, data: any, responseTo?: WsMessage) {
+    const cleanData = plainObject(data)
+    return this.sendToAll(eventType, cleanData, responseTo)
+  }
+
   sendToAll(eventType: string, data: any, responseTo?: WsMessage) {
     this.wss.clients.forEach((client) => {
       if (client.readyState === OPEN) {
@@ -45,4 +50,34 @@ export class WsEventProcessor {
 
     this.ws.send( JSON.stringify(message) )
   }
+}
+
+
+function plainObject(
+  Class: any, {seen = []}: {seen?: any[]} = {}
+) {
+  if (!(Class instanceof Object)) {
+    return Class
+  }
+
+  if (Class instanceof Array) {
+    return Class.map(x => {
+      // seen.push(x)
+      return plainObject(x, {seen})
+    })
+  }
+
+  const clone = {...Class}
+  seen.push(Class)
+  Object.entries(clone).forEach(([key, value]) => {
+    // remove circular references
+    if (seen.includes(value)) {
+      delete clone[key]
+      return
+    }
+
+    clone[key] = plainObject(value, {seen})
+  })
+
+  return clone
 }

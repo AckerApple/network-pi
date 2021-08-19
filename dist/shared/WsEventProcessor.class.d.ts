@@ -4,6 +4,7 @@ import { Subject } from "rxjs";
 export declare class SocketSwitch {
     wss: WebSocket.Server;
     constructor(wss: WebSocket.Server);
+    sendCleanToAll(eventType: string, data: any, responseTo?: WsMessage): void;
     sendToAll(eventType: string, data: any, responseTo?: WsMessage): void;
 }
 export declare class WsEventProcessor {

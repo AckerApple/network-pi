@@ -8,6 +8,10 @@ class SocketSwitch {
     constructor(wss) {
         this.wss = wss;
     }
+    sendCleanToAll(eventType, data, responseTo) {
+        const cleanData = plainObject(data);
+        return this.sendToAll(eventType, cleanData, responseTo);
+    }
     sendToAll(eventType, data, responseTo) {
         this.wss.clients.forEach((client) => {
             if (client.readyState === ws_1.OPEN) {
@@ -48,4 +52,26 @@ class WsEventProcessor {
     }
 }
 exports.WsEventProcessor = WsEventProcessor;
+function plainObject(Class, { seen = [] } = {}) {
+    if (!(Class instanceof Object)) {
+        return Class;
+    }
+    if (Class instanceof Array) {
+        return Class.map(x => {
+            // seen.push(x)
+            return plainObject(x, { seen });
+        });
+    }
+    const clone = Object.assign({}, Class);
+    seen.push(Class);
+    Object.entries(clone).forEach(([key, value]) => {
+        // remove circular references
+        if (seen.includes(value)) {
+            delete clone[key];
+            return;
+        }
+        clone[key] = plainObject(value, { seen });
+    });
+    return clone;
+}
 //# sourceMappingURL=WsEventProcessor.class.js.map
