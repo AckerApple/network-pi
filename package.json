@@ -1,6 +1,6 @@
 {
   "name": "network-pi",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Acker testing platform for pi controlled over the network",
   "main": "index.js",
   "scripts": {
@@ -31,8 +31,8 @@
     "node-wiring-pi": "0.0.5"
   },
   "dependencies": {
-    "ack-pi": "github:ackerapple/ack-pi",
-    "ack-reload": "github:ackerapple/ack-reload",
+    "ack-pi": "git+https://github.com/ackerapple/ack-pi.git",
+    "ack-reload": "git+https://github.com/ackerapple/ack-reload.git",
     "node-static": "^0.7.11",
     "node-wifi": "^2.0.14",
     "node-wiring-pi": "0.0.5",
