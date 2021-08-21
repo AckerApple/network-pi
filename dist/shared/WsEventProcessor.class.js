@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WsEventProcessor = exports.SocketSwitch = void 0;
+exports.plainObject = exports.WsEventProcessor = exports.SocketSwitch = void 0;
 const tslib_1 = require("tslib");
 const ws_1 = require("ws");
 const rxjs_1 = require("rxjs");
@@ -48,7 +48,10 @@ class WsEventProcessor {
         if (responseTo === null || responseTo === void 0 ? void 0 : responseTo.responseId) {
             message.responseId = responseTo.responseId;
         }
-        this.ws.send(JSON.stringify(message));
+        return this.ws.send(JSON.stringify(message));
+    }
+    sendClean(eventType, data, responseTo) {
+        return this.send(eventType, plainObject(data), responseTo);
     }
 }
 exports.WsEventProcessor = WsEventProcessor;
@@ -74,4 +77,5 @@ function plainObject(Class, { seen = [] } = {}) {
     });
     return clone;
 }
+exports.plainObject = plainObject;
 //# sourceMappingURL=WsEventProcessor.class.js.map

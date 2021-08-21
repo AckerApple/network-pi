@@ -14,4 +14,8 @@ export declare class WsEventProcessor {
     monitorMessages(): this;
     onMessage(dataString: string): Promise<void>;
     send(eventType: string, data: any, responseTo?: WsMessage): void;
+    sendClean(eventType: string, data: any, responseTo?: WsMessage): void;
 }
+export declare function plainObject(Class: any, { seen }?: {
+    seen?: any[];
+}): any;

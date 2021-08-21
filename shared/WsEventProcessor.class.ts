@@ -41,19 +41,25 @@ export class WsEventProcessor {
     }
   }
 
-   send(eventType: string, data: any, responseTo?: WsMessage) {
+  send(eventType: string, data: any, responseTo?: WsMessage) {
     const message: WsMessage = {eventType, data}
 
     if (responseTo?.responseId) {
       message.responseId = responseTo.responseId
     }
 
-    this.ws.send( JSON.stringify(message) )
+    return this.ws.send( JSON.stringify(message) )
+  }
+
+  sendClean(
+    eventType: string, data: any, responseTo?: WsMessage
+  ) {
+    return this.send(eventType, plainObject(data), responseTo)
   }
 }
 
 
-function plainObject(
+export function plainObject(
   Class: any, {seen = []}: {seen?: any[]} = {}
 ) {
   if (!(Class instanceof Object)) {
