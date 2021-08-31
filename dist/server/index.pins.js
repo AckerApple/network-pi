@@ -4,15 +4,17 @@ exports.setOutputPin = exports.setInputPin = exports.isPinStateMatched = exports
 const os = require("os");
 const ack_pi_1 = require("ack-pi");
 const isPiPlatform = os.platform() === "linux";
-const piPins = ack_pi_1.pi(isPiPlatform);
+const piPins = (0, ack_pi_1.pi)(isPiPlatform);
 exports.pins = {
     "0": {
         "num": 0,
-        "type": "INPUT",
+        "type": "INPUT", // OUTPUT
+        // "mode" : "LOW"
     },
     "1": {
         "num": 1,
         "type": "INPUT",
+        // "mode" : "low"
     }
 };
 function setPins(data) {

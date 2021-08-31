@@ -19,7 +19,7 @@ export function startHttpWebSocketServer({
     }
 
     httpStaticFilePaths.forEach(path => {
-      var file = new(nodeStatic.Server)(path)
+      var file = new nodeStatic.Server(path) // default includes {cache:3600}
       file.serve(req, res)
     })
   })

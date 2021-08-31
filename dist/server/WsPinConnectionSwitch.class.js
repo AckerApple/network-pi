@@ -9,7 +9,7 @@ const systeminformation_1 = require("systeminformation");
 const wifi = require("node-wifi");
 class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessageHandler {
     setPins(data) {
-        index_pins_1.setPins(data.data);
+        (0, index_pins_1.setPins)(data.data);
         this.send('pins', index_pins_1.pins, data); // echo
         console.log('ws setPins');
     }
@@ -17,26 +17,26 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
         this.send('pins', index_pins_1.pins, data);
     }
     command(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
             this.send('commandResult', yield runCommand(data.data), data);
         });
     }
     wifiNetworks(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const results = yield systeminformation_1.wifiNetworks();
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const results = yield (0, systeminformation_1.wifiNetworks)();
             this.send('wifiNetworks', results, data);
         });
     }
     wifiConnections(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const results = yield systeminformation_1.wifiConnections();
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const results = yield (0, systeminformation_1.wifiConnections)();
             this.send('wifiConnections', results, data);
         });
     }
     bluetoothDevices(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
             try {
-                const results = yield systeminformation_1.bluetoothDevices();
+                const results = yield (0, systeminformation_1.bluetoothDevices)();
                 this.send('bluetoothDevices', results, data);
             }
             catch (err) {
@@ -46,19 +46,19 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
         });
     }
     audioDevices(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const results = yield systeminformation_1.audio();
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const results = yield (0, systeminformation_1.audio)();
             this.send('audioDevices', results, data);
         });
     }
     networkInterfaces(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const results = yield systeminformation_1.networkInterfaces();
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const results = yield (0, systeminformation_1.networkInterfaces)();
             this.send('networkInterfaces', results, data);
         });
     }
     wifiConnect(data) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
             const { ssid, password, iface } = data.data;
             // establish wifi abilities
             wifi.init({ iface });

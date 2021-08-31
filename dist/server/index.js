@@ -10,7 +10,7 @@ nconf.argv().env(); // read params
 const host = nconf.get('host') || undefined;
 const port = nconf.get('port') || 3000;
 const basePath = __dirname;
-const servers = index_utils_1.startHttpWebSocketServer({
+const servers = (0, index_utils_1.startHttpWebSocketServer)({
     port, host,
     httpStaticFilePaths: [
         path.join(__dirname, '../app/dist/network-pi-webapp')

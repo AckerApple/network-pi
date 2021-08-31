@@ -14,7 +14,7 @@ function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFil
             query: url.parse(req.url, true).query
         };
         httpStaticFilePaths.forEach(path => {
-            var file = new (nodeStatic.Server)(path);
+            var file = new nodeStatic.Server(path); // default includes {cache:3600}
             file.serve(req, res);
         });
     });
