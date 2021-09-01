@@ -7,7 +7,7 @@
 /*! exports provided: name, version, description, main, scripts, author, license, manualDependencies, peerDependencies, dependencies, devDependencies, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"network-pi\",\"version\":\"1.2.7\",\"description\":\"Acker testing platform for pi controlled over the network\",\"main\":\"index.js\",\"scripts\":{\"start:pi\":\"npm-run-all --parallel start:server:pi start:webapp:pi\",\"start:pi:ng\":\"npm-run-all --parallel start:server:pi start:webapp:ng\",\"start:webapp\":\"ack-reload --dir ./app/dist/network-pi-webapp/ --host 0.0.0.0\",\"start:webapp:ng\":\"cd app && npm run start -- --open --host 0.0.0.0 --disable-host-check\",\"start:webapp:pi\":\"sudo npm run start:webapp -- --port 80\",\"build\":\"npm run build:server && cd app && npm run build\",\"build:server\":\"tsc --project ./server/tsconfig.json\",\"start:server\":\"host=0.0.0.0 port=3000 ts-node server/index\",\"start:server:pi\":\"host=0.0.0.0 port=3000 npm run start:server\",\"start:server:watch\":\"ts-node-dev server/index\",\"start:server:watch:pi\":\"host=0.0.0.0 npm run start:server:watch\",\"test\":\"echo \\\"Error: no test specified\\\" && exit 1\",\"watch\":\"npm-run-all --parallel start:webapp:ng start:server:watch\",\"watch:pi\":\"npm-run-all --parallel start:webapp:pi start:server:watch:pi\",\"save\":\"npm run build && npm run save:server\",\"save:server\":\"npm --no-git-tag-version version patch && git add . && git commit -m \\\"update\\\" && git push\",\"serve:ng\":\"cd app && ng serve ./app/dist/network-pi-webapp\",\"start\":\"npm-run-all --parallel start:server start:webapp\",\"patch:version\":\"npm --no-git-tag-version version patch\"},\"author\":\"\",\"license\":\"ISC\",\"manualDependencies\":{\"wiringpi-node\":\"^2.4.4\",\"node-wiring-pi\":\"0.0.5\"},\"peerDependencies\":{\"rxjs\":\">=7.3.0\"},\"dependencies\":{\"ack-pi\":\"git+https://github.com/ackerapple/ack-pi.git\",\"ack-reload\":\"git+https://github.com/ackerapple/ack-reload.git\",\"node-static\":\"^0.7.11\",\"node-wifi\":\"^2.0.15\",\"node-wiring-pi\":\"0.0.5\",\"nconf\":\"^0.11.3\",\"npm-run-all\":\"^4.1.5\",\"systeminformation\":\"^5.8.6\",\"ws\":\"^7.4.4\"},\"devDependencies\":{\"rxjs\":\"^7.3.0\",\"ts-node\":\"^10.2.1\",\"@types/node\":\"^16.7.9\",\"@types/ws\":\"^7.4.4\",\"ts-node-dev\":\"^1.1.8\",\"typescript\":\"4.4.2\",\"zone.js\":\"^0.11.4\"}}");
+module.exports = JSON.parse("{\"name\":\"network-pi\",\"version\":\"1.2.8\",\"description\":\"Acker testing platform for pi controlled over the network\",\"main\":\"index.js\",\"scripts\":{\"start:pi\":\"npm-run-all --parallel start:server:pi start:webapp:pi\",\"start:pi:ng\":\"npm-run-all --parallel start:server:pi start:webapp:ng\",\"start:webapp\":\"ack-reload --dir ./app/dist/network-pi-webapp/ --host 0.0.0.0\",\"start:webapp:ng\":\"cd app && npm run start -- --open --host 0.0.0.0 --disable-host-check\",\"start:webapp:pi\":\"sudo npm run start:webapp -- --port 80\",\"build\":\"npm run build:server && cd app && npm run build\",\"build:server\":\"tsc --project ./server/tsconfig.json\",\"start:server\":\"host=0.0.0.0 port=3000 ts-node server/index\",\"start:server:pi\":\"host=0.0.0.0 port=3000 npm run start:server\",\"start:server:watch\":\"ts-node-dev server/index\",\"start:server:watch:pi\":\"host=0.0.0.0 npm run start:server:watch\",\"test\":\"echo \\\"Error: no test specified\\\" && exit 1\",\"watch\":\"npm-run-all --parallel start:webapp:ng start:server:watch\",\"watch:pi\":\"npm-run-all --parallel start:webapp:pi start:server:watch:pi\",\"save\":\"npm run build && npm run save:server\",\"save:server\":\"npm --no-git-tag-version version patch && git add . && git commit -m \\\"update\\\" && git push\",\"serve:ng\":\"cd app && ng serve ./app/dist/network-pi-webapp\",\"start\":\"npm-run-all --parallel start:server start:webapp\",\"patch:version\":\"npm --no-git-tag-version version patch\"},\"author\":\"\",\"license\":\"ISC\",\"manualDependencies\":{\"wiringpi-node\":\"^2.4.4\",\"node-wiring-pi\":\"0.0.5\"},\"peerDependencies\":{\"rxjs\":\">=7.3.0\"},\"dependencies\":{\"ack-pi\":\"git+https://github.com/ackerapple/ack-pi.git\",\"ack-reload\":\"git+https://github.com/ackerapple/ack-reload.git\",\"node-static\":\"^0.7.11\",\"node-wifi\":\"^2.0.15\",\"node-wiring-pi\":\"0.0.5\",\"nconf\":\"^0.11.3\",\"npm-run-all\":\"^4.1.5\",\"systeminformation\":\"^5.8.6\",\"ws\":\"^7.4.4\"},\"devDependencies\":{\"@types/nconf\":\"^0.10.1\",\"@types/node\":\"^16.7.9\",\"@types/ws\":\"^7.4.4\",\"rxjs\":\"^7.3.0\",\"ts-node\":\"^10.2.1\",\"ts-node-dev\":\"^1.1.8\",\"typescript\":\"4.4.2\",\"zone.js\":\"^0.11.4\"}}");
 
 /***/ }),
 
@@ -25,11 +25,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "../node_modules/rxjs/dist/esm/index.js");
 
 
+const WebSocket = __webpack_require__(/*! ws */ "../node_modules/ws/browser.js");
 const isWsNeeded = typeof WebSocket === 'undefined';
 function getWs() {
     return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
         if (isWsNeeded) {
-            const ws = yield __webpack_require__.e(/*! import() | ws */ "ws").then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7));
+            const ws = yield Promise.resolve(/*! import() */).then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7));
             return ws;
         }
         return WebSocket;
@@ -80,12 +81,13 @@ class WsEventCommunicator {
         this.connect();
     }
     sendWaitMessageResponse(message) {
+        const ws = this.ws;
         const id = Date.now() + '-' + (++this.loadCount);
         message.responseId = id;
         return new Promise((res, rej) => {
             const obj = { res, rej };
             this.promises[id] = obj; // prevent type checking `res`
-            this.ws.send(JSON.stringify(message));
+            ws.send(JSON.stringify(message));
         });
     }
     keepRetryingConnect() {
@@ -124,7 +126,7 @@ class WsEventCommunicator {
             this.$onopen.next(this.ws);
         };
         ws.onmessage = ev => {
-            const data = JSON.parse(ev.data);
+            const data = JSON.parse(ev.data.toString());
             this.lastMessage = data;
             // someone waiting for a response?
             const resId = data.responseId;
@@ -138,7 +140,8 @@ class WsEventCommunicator {
         };
     }
     send(eventType, data) {
-        this.ws.send(JSON.stringify({ eventType, data }));
+        const ws = this.ws;
+        ws.send(JSON.stringify({ eventType, data }));
     }
     trySend(eventType, data) {
         if (!this.ws) {

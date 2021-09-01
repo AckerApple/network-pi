@@ -26,9 +26,9 @@ export function setPins( data: ServerPinsSummary ){
     setPin( data[x] )
   }
 
-  Object.keys(pins).filter(pin => !data[pin]).forEach(pin => {
+  Object.keys(pins).filter(pin => !data[pin as any]).forEach(pin => {
     console.log('removed pin', pin)
-    delete pins[pin]
+    delete pins[pin as any]
   });
 }
 

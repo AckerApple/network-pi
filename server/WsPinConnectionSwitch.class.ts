@@ -8,7 +8,9 @@ import {
   wifiConnections,
   wifiNetworks, audio,
 } from "systeminformation"
-import * as wifi from "node-wifi"
+
+// import * as wifi from "node-wifi"
+const wifi = require('node-wifi')
 
 export class WsPinConnectionSwitch extends WsEventMessageHandler {
   setPins(data: WsMessage) {
@@ -62,11 +64,11 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
     wifi.init({iface})
 
     const result = await wifi.connect({ ssid, password })
-      .catch((err) => {
+      .catch((err: any) => {
         this.send('wifiConnections', err, data)
         return err
       })
-      .then((x) => {
+      .then((x: any) => {
         this.wifiConnections(data)
         return x
       })
@@ -78,7 +80,7 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
 /** browser debug any sent command */
 function runCommand(command: string) {
   return new Promise((res, rej) => {
-    exec(command, (error, stdout, stderr) => {
+    exec(command, (error: Error, stdout: string, stderr: string) => {
       if (error) {
         return res(error)
       }

@@ -13,6 +13,9 @@ class SocketSwitch {
         return this.sendToAll(eventType, cleanData, responseTo);
     }
     sendToAll(eventType, data, responseTo) {
+        if (!this.wss.clients) {
+            return;
+        }
         this.wss.clients.forEach((client) => {
             if (client.readyState === ws_1.OPEN) {
                 new WsEventProcessor(client).send(eventType, data, responseTo);

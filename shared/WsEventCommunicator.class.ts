@@ -1,7 +1,6 @@
-import { WsMessage } from "./types";
-import { Subject } from "rxjs";
-
-declare const WebSocket
+import { WsMessage } from './types'
+import { Subject } from 'rxjs'
+const WebSocket = require('ws')
 
 const isWsNeeded = typeof WebSocket === 'undefined'
 async function getWs(): Promise<any> {
@@ -15,11 +14,11 @@ async function getWs(): Promise<any> {
 
 export class WsEventCommunicator {
   reconnectTimer: any
-  disconnectAsked!: boolean
+  disconnectAsked?: boolean
   lastMessage!: WsMessage
 
   loadCount = 0
-  ws!: WebSocket
+  ws?: WebSocket
 
   promises: {
     [id: string]: {res: (data: WsMessage) => any, rej: () => any}
@@ -68,12 +67,14 @@ export class WsEventCommunicator {
   }
 
   sendWaitMessageResponse<T>(message: WsMessage): Promise<T>{
+    const ws = this.ws as WebSocket
+
     const id = Date.now() + '-' + (++this.loadCount)
     message.responseId = id
     return new Promise((res, rej) =>{
       const obj = {res, rej}
       this.promises[id] = obj as any // prevent type checking `res`
-      this.ws.send(JSON.stringify(message))
+      ws.send(JSON.stringify(message))
     })
   }
 
@@ -121,7 +122,7 @@ export class WsEventCommunicator {
     }
 
     ws.onmessage = ev => {
-      const data = JSON.parse(ev.data)
+      const data = JSON.parse(ev.data.toString())
       this.lastMessage = data
 
       // someone waiting for a response?
@@ -138,7 +139,8 @@ export class WsEventCommunicator {
   }
 
   send(eventType: string, data?: any) {
-    this.ws.send(JSON.stringify({eventType, data}))
+    const ws = this.ws as WebSocket
+    ws.send(JSON.stringify({eventType, data}))
   }
 
   trySend(eventType: string, data?: any) {

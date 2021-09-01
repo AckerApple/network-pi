@@ -6,7 +6,8 @@ const { exec } = require("child_process");
 const index_pins_1 = require("./index.pins");
 const WsEventMessageHandler_class_1 = require("../shared/WsEventMessageHandler.class");
 const systeminformation_1 = require("systeminformation");
-const wifi = require("node-wifi");
+// import * as wifi from "node-wifi"
+const wifi = require('node-wifi');
 class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessageHandler {
     setPins(data) {
         (0, index_pins_1.setPins)(data.data);

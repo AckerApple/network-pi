@@ -12,6 +12,10 @@ export class SocketSwitch {
   }
 
   sendToAll(eventType: string, data: any, responseTo?: WsMessage) {
+    if (!this.wss.clients) {
+      return
+    }
+
     this.wss.clients.forEach((client) => {
       if (client.readyState === OPEN) {
         new WsEventProcessor(client).send(eventType, data, responseTo)
@@ -59,9 +63,9 @@ export class WsEventProcessor {
 }
 
 
-export function plainObject(
-  Class: any, {seen = []}: {seen?: any[]} = {}
-) {
+export function plainObject<T>(
+  Class: T, {seen = []}: {seen?: any[]} = {}
+): T {
   if (!(Class instanceof Object)) {
     return Class
   }
@@ -70,10 +74,10 @@ export function plainObject(
     return Class.map(x => {
       // seen.push(x)
       return plainObject(x, {seen})
-    })
+    }) as any
   }
 
-  const clone = {...Class}
+  const clone: any = {...Class}
   seen.push(Class)
   Object.entries(clone).forEach(([key, value]) => {
     // remove circular references

@@ -7,7 +7,8 @@ export class WsEventMessageHandler extends WsEventProcessor {
   async processWsEventMessage(
     data: WsMessage
   ): Promise<void> {
-    if(!this[data.eventType]) {
+    const check = (this as any)[data.eventType]
+    if(!check) {
       const message = `received unknown command ${data.eventType}`
 
       console.warn('unknown message', message)
@@ -19,8 +20,9 @@ export class WsEventMessageHandler extends WsEventProcessor {
     }
 
     try {
-      this[data.eventType].call(this, data)
-    } catch (err) {
+      const method = (this as any)[data.eventType] as any
+      method.call(this, data)
+    } catch (err: any) {
       this.send('log', {
         message: `failed command ${data.eventType}`,
         error: Object.getOwnPropertyNames(err).reverse().reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)

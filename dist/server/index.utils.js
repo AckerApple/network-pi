@@ -9,9 +9,10 @@ function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFil
     console.log('serving static files from', httpStaticFilePaths);
     const server = http.createServer((req, res) => {
         console.log('request', req.url);
+        const reqUrl = req.url;
         const rUrl = {
-            path: req.url.split('?').shift(),
-            query: url.parse(req.url, true).query
+            path: reqUrl.split('?').shift(),
+            query: url.parse(reqUrl, true).query
         };
         httpStaticFilePaths.forEach(path => {
             var file = new nodeStatic.Server(path); // default includes {cache:3600}

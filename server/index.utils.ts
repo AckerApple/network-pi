@@ -13,9 +13,10 @@ export function startHttpWebSocketServer({
 
   const server = http.createServer((req,res)=>{
     console.log('request', req.url)
-    const rUrl={
-      path  : req.url.split('?').shift(),
-      query : url.parse(req.url, true).query
+    const reqUrl = req.url as string
+    const rUrl = {
+      path  : reqUrl.split('?').shift(),
+      query : url.parse(reqUrl, true).query
     }
 
     httpStaticFilePaths.forEach(path => {
@@ -43,7 +44,12 @@ export function addWebSocketToHttpServer(server: http.Server): WebSocket.Server 
   return wss
 }
 
-export function upgradeHttpServerToWebSocket(request, socket, head, wss: WebSocket.Server) {
+export function upgradeHttpServerToWebSocket(
+  request: any,
+  socket: any,
+  head: any,
+  wss: WebSocket.Server
+) {
   // console.log('starting websocket server...')
   const pathname = url.parse(request.url).pathname;
 

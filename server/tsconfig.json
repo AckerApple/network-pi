@@ -1,18 +1,8 @@
 {
+  "extends": "../tsconfig",
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "../dist",
-    "sourceMap": true,
-    "declaration": true,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "module": "commonjs",
-    "importHelpers": true,
-    "target": "es2015",
-    "lib": [
-      "es2018",
-      "dom"
-    ]
-  }, "include": ["../shared", "."]
+  },
+  "include": ["../shared", "."]
 }

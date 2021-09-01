@@ -1,12 +1,12 @@
-import { WsMessage } from "./types";
-import { Subject } from "rxjs";
+import { WsMessage } from './types';
+import { Subject } from 'rxjs';
 export declare class WsEventCommunicator {
-    url?: string;
+    url?: string | undefined;
     reconnectTimer: any;
-    disconnectAsked: boolean;
+    disconnectAsked?: boolean;
     lastMessage: WsMessage;
     loadCount: number;
-    ws: WebSocket;
+    ws?: WebSocket;
     promises: {
         [id: string]: {
             res: (data: WsMessage) => any;
@@ -17,7 +17,7 @@ export declare class WsEventCommunicator {
     $error: Subject<WebSocket>;
     $onmessage: Subject<WsMessage>;
     $reconnecting: Subject<void>;
-    constructor(url?: string);
+    constructor(url?: string | undefined);
     connect(): Promise<void>;
     initSocket(): Promise<void>;
     disconnect(): void;

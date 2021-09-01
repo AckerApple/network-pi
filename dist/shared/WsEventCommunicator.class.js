@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WsEventCommunicator = void 0;
 const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
+const WebSocket = require('ws');
 const isWsNeeded = typeof WebSocket === 'undefined';
 function getWs() {
     return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
@@ -58,12 +59,13 @@ class WsEventCommunicator {
         this.connect();
     }
     sendWaitMessageResponse(message) {
+        const ws = this.ws;
         const id = Date.now() + '-' + (++this.loadCount);
         message.responseId = id;
         return new Promise((res, rej) => {
             const obj = { res, rej };
             this.promises[id] = obj; // prevent type checking `res`
-            this.ws.send(JSON.stringify(message));
+            ws.send(JSON.stringify(message));
         });
     }
     keepRetryingConnect() {
@@ -102,7 +104,7 @@ class WsEventCommunicator {
             this.$onopen.next(this.ws);
         };
         ws.onmessage = ev => {
-            const data = JSON.parse(ev.data);
+            const data = JSON.parse(ev.data.toString());
             this.lastMessage = data;
             // someone waiting for a response?
             const resId = data.responseId;
@@ -116,7 +118,8 @@ class WsEventCommunicator {
         };
     }
     send(eventType, data) {
-        this.ws.send(JSON.stringify({ eventType, data }));
+        const ws = this.ws;
+        ws.send(JSON.stringify({ eventType, data }));
     }
     trySend(eventType, data) {
         if (!this.ws) {

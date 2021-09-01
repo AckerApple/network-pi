@@ -7,7 +7,8 @@ const WsEventProcessor_class_1 = require("./WsEventProcessor.class");
 class WsEventMessageHandler extends WsEventProcessor_class_1.WsEventProcessor {
     processWsEventMessage(data) {
         return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
-            if (!this[data.eventType]) {
+            const check = this[data.eventType];
+            if (!check) {
                 const message = `received unknown command ${data.eventType}`;
                 console.warn('unknown message', message);
                 this.send('log', {
@@ -16,7 +17,8 @@ class WsEventMessageHandler extends WsEventProcessor_class_1.WsEventProcessor {
                 return;
             }
             try {
-                this[data.eventType].call(this, data);
+                const method = this[data.eventType];
+                method.call(this, data);
             }
             catch (err) {
                 this.send('log', {

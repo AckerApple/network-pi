@@ -16,6 +16,6 @@ export declare class WsEventProcessor {
     send(eventType: string, data: any, responseTo?: WsMessage): void;
     sendClean(eventType: string, data: any, responseTo?: WsMessage): void;
 }
-export declare function plainObject(Class: any, { seen }?: {
+export declare function plainObject<T>(Class: T, { seen }?: {
     seen?: any[];
-}): any;
+}): T;
