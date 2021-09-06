@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WsEventCommunicator = void 0;
 const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
-const WebSocket = require('ws');
+// const WebSocket = require('ws')
 const isWsNeeded = typeof WebSocket === 'undefined';
 function getWs() {
     return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
