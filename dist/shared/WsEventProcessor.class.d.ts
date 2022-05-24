@@ -16,6 +16,11 @@ export declare class WsEventProcessor {
     send(eventType: string, data: any, responseTo?: WsMessage): void;
     sendClean(eventType: string, data: any, responseTo?: WsMessage): void;
 }
-export declare function plainObject<T>(Class: T, { seen }?: {
+/** Remove circular references from an object. Make an object safe to output anywhere
+ * - Future update could add option.maxDepth which would prevent logging an Error too deeply nested
+*/
+export declare function plainObject<T>(Class: T, // An object to clean circular references from
+{ seen, maxDepth }?: {
     seen?: any[];
+    maxDepth?: number;
 }): T;

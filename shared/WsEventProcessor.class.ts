@@ -62,32 +62,50 @@ export class WsEventProcessor {
   }
 }
 
-
+/** Remove circular references from an object. Make an object safe to output anywhere
+ * - Future update could add option.maxDepth which would prevent logging an Error too deeply nested
+*/
 export function plainObject<T>(
-  Class: T, {seen = []}: {seen?: any[]} = {}
+  Class: T, // An object to clean circular references from
+  {seen = [], maxDepth}: {
+      seen?: any[], // record of all objects seen (used to identify circular references)
+      maxDepth?: number // optional ability to prevent returning an object too deeply nested
+  } = {} 
 ): T {
+  // not an array or not an object then we have no work to do
   if (!(Class instanceof Object)) {
     return Class
   }
 
+  // We are working with an Object so begin controlling nested depth
+  const newMaxDepth = maxDepth === undefined ? undefined : maxDepth - 1
+  if (newMaxDepth !== undefined && newMaxDepth === -1) {
+    return undefined as any // do not log nested any further 
+  }
+
   if (Class instanceof Array) {
-    return Class.map(x => {
-      // seen.push(x)
-      return plainObject(x, {seen})
+    // clone and clean all array positions
+    return Class.map((x) => {
+      return plainObject(x, {seen, maxDepth: newMaxDepth}) // self calling for next depth cleaned
     }) as any
   }
 
-  const clone: any = {...Class}
-  seen.push(Class)
-  Object.entries(clone).forEach(([key, value]) => {
-    // remove circular references
+  const clone: any = {} // do not touch original object, create memory to clone it
+  seen.push(Class) // record what we have cleaned to avoid circular references
+  
+  // loop object to clean children
+  Object.getOwnPropertyNames(Class).forEach((key: string) => {
+    const value = (Class as any)[key]
+
+    // do we have a circular reference to something we've already seen?
     if (seen.includes(value)) {
-      delete clone[key]
-      return
+        delete clone[ key ] // current item is a circular reference (remove it, it is seen elsewhere)
+        return // do not continue
     }
 
-    clone[key] = plainObject(value, {seen})
+    // clean children with a self call
+    clone[key] = plainObject(value, {seen, maxDepth: newMaxDepth})
   })
 
-  return clone
+  return clone // all clean and ready for use with things like JSON.stringify()
 }
