@@ -35,7 +35,7 @@ class WsEventProcessor {
         return this;
     }
     onMessage(dataString) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 const data = JSON.parse(dataString);
                 this.$message.next(data);

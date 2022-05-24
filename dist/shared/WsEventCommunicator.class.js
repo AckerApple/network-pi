@@ -6,7 +6,7 @@ const rxjs_1 = require("rxjs");
 // const WebSocket = require('ws') // causes not for browser error
 const isWsNeeded = typeof WebSocket === 'undefined';
 function getWs() {
-    return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         if (isWsNeeded) {
             const ws = yield Promise.resolve().then(() => require('ws'));
             return ws;
@@ -25,7 +25,7 @@ class WsEventCommunicator {
         this.$reconnecting = new rxjs_1.Subject();
     }
     connect() {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (this.ws) {
                 console.warn('web socket server already connected');
                 return;
@@ -35,7 +35,7 @@ class WsEventCommunicator {
         });
     }
     initSocket() {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 const ws = new (yield getWs())(this.url);
                 this.socketListen(ws);
@@ -70,7 +70,7 @@ class WsEventCommunicator {
     }
     keepRetryingConnect() {
         // console.log(`Trying ws connection to ${this.url}...`)
-        this.reconnectTimer = setInterval(() => (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        this.reconnectTimer = setInterval(() => tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.$reconnecting.next();
             try {
                 // console.log('running connect loop')

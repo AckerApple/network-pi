@@ -18,24 +18,24 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
         this.send('pins', index_pins_1.pins, data);
     }
     command(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             this.send('commandResult', yield runCommand(data.data), data);
         });
     }
     wifiNetworks(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const results = yield (0, systeminformation_1.wifiNetworks)();
             this.send('wifiNetworks', results, data);
         });
     }
     wifiConnections(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const results = yield (0, systeminformation_1.wifiConnections)();
             this.send('wifiConnections', results, data);
         });
     }
     bluetoothDevices(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             try {
                 const results = yield (0, systeminformation_1.bluetoothDevices)();
                 this.send('bluetoothDevices', results, data);
@@ -47,19 +47,19 @@ class WsPinConnectionSwitch extends WsEventMessageHandler_class_1.WsEventMessage
         });
     }
     audioDevices(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const results = yield (0, systeminformation_1.audio)();
             this.send('audioDevices', results, data);
         });
     }
     networkInterfaces(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const results = yield (0, systeminformation_1.networkInterfaces)();
             this.send('networkInterfaces', results, data);
         });
     }
     wifiConnect(data) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const { ssid, password, iface } = data.data;
             // establish wifi abilities
             wifi.init({ iface });

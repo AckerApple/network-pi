@@ -1,6 +1,6 @@
 {
   "name": "network-pi",
-  "version": "1.2.11",
+  "version": "1.2.13",
   "description": "Acker testing platform for pi controlled over the network",
   "main": "index.js",
   "scripts": {
@@ -31,27 +31,27 @@
     "node-wiring-pi": "0.0.5"
   },
   "peerDependencies": {
-    "rxjs": ">=7.3.0"
+    "rxjs": ">=7.5.5"
   },
   "dependencies": {
     "ack-pi": "git+https://github.com/ackerapple/ack-pi.git",
-    "ack-reload": "git+https://github.com/ackerapple/ack-reload.git",
+    "nconf": "^0.12.0",
     "node-static": "^0.7.11",
-    "node-wifi": "^2.0.15",
+    "node-wifi": "^2.0.16",
     "node-wiring-pi": "0.0.5",
-    "nconf": "^0.11.4",
     "npm-run-all": "^4.1.5",
-    "systeminformation": "^5.8.6",
+    "systeminformation": "^5.11.15",
     "ws": "^7.4.4"
   },
   "devDependencies": {
-    "@types/nconf": "^0.10.1",
-    "@types/node": "^16.7.9",
+    "@types/nconf": "^0.10.2",
+    "@types/node": "^17.0.35",
     "@types/ws": "^7.4.4",
+    "ack-reload": "^4.0.0",
     "rxjs": "^7.3.0",
-    "ts-node": "^10.2.1",
+    "ts-node": "^10.8.0",
     "ts-node-dev": "^1.1.8",
-    "typescript": "4.4.2",
-    "zone.js": "^0.11.4"
+    "typescript": "4.7.2",
+    "zone.js": "^0.11.5"
   }
 }
