@@ -5,9 +5,11 @@ Acker testing platform for pi controlled over the network
 
 Do you need nvm as you need to use older versions of Node at this time
 ```
-nvm install 10.13.0 && nvm use 10.13.0
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+source ~/.profile
+
+nvm install 10.13.0 && nvm use 10.13.0
 ```
 
 GPIO pin controller
@@ -29,10 +31,6 @@ sudo ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/npm" "/usr/local/bin/npm"
 ```
 
 ### Install
-
-```
-nvm install 10.13.0 && nvm use 10.13.0
-```
 
 ```
 npm install node-wiring-pi && npm install
@@ -70,6 +68,10 @@ rm -rf node_modules && rm -f package-lock.json && npm install node-wiring-pi && 
 ```
 
 ### Wifi
+
+```sh
+sudo raspi-config
+```
 
 Edit wifi within `sudo nano /etc/wpa_supplicant/wpa_supplicant.conf`
 

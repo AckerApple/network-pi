@@ -12,7 +12,10 @@ StandardOutput=inherit
 StandardError=inherit
 Restart=no
 #Restart=always
-User=pi
+
+# Default user is root so next line not needed
+# User=pi
+
 RemainAfterExit=yes
 
 [Install]

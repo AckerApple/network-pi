@@ -16,7 +16,7 @@ export class SocketSwitch {
       return
     }
 
-    this.wss.clients.forEach((client) => {
+    this.wss.clients.forEach((client: WebSocket) => {
       if (client.readyState === OPEN) {
         new WsEventProcessor(client).send(eventType, data, responseTo)
       }
