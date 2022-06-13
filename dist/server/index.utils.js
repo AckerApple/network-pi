@@ -20,7 +20,9 @@ function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFil
             var file = new nodeStatic.Server(path); // default includes {cache:3600}
             result = yield new Promise((resolve, reject) => {
                 try {
-                    file.servePath(rUrl.path, 200, {}, req, res, (status, headers) => {
+                    const pathname = rUrl.path; // url.parse(req.url).pathname
+                    const filePath = decodeURI(pathname);
+                    file.servePath(filePath, 200, {}, req, res, (status, headers) => {
                         resolve({ status, headers });
                     });
                 }

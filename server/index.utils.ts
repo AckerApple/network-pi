@@ -31,7 +31,9 @@ export function startHttpWebSocketServer({
       var file = new nodeStatic.Server(path) // default includes {cache:3600}
       result = await new Promise((resolve, reject) => {        
         try {
-          file.servePath(rUrl.path, 200, {}, req, res, (status: number, headers: {[name: string]: string}) => {
+          const pathname = rUrl.path as string // url.parse(req.url).pathname
+          const filePath = decodeURI(pathname)
+          file.servePath(filePath, 200, {}, req, res, (status: number, headers: {[name: string]: string}) => {
             resolve({ status, headers })
           })
         } catch (err) {
