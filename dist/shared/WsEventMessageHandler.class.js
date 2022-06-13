@@ -10,7 +10,7 @@ class WsEventMessageHandler extends WsEventProcessor_class_1.WsEventProcessor {
             const check = this[data.eventType];
             if (!check) {
                 const message = `received unknown command ${data.eventType}`;
-                console.warn('unknown message', message);
+                console.warn(message);
                 this.send('log', {
                     message, data
                 }, data);

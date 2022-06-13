@@ -1,5 +1,5 @@
 const { exec } = require("child_process")
-import { WsMessage } from "../shared/types"
+import { ServerPinsSummary, WsMessage } from "../shared/types"
 import { setPins, pins } from "./index.pins"
 import { WsEventMessageHandler } from "../shared/WsEventMessageHandler.class"
 import {
@@ -13,7 +13,7 @@ import {
 const wifi = require('node-wifi')
 
 export class WsPinConnectionSwitch extends WsEventMessageHandler {
-  setPins(data: WsMessage) {
+  setPins(data: WsMessage & { data: ServerPinsSummary }) {
     setPins( data.data )
     this.send('pins', pins, data) // echo
     console.log('ws setPins')
@@ -23,7 +23,7 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
     this.send('pins', pins, data)
   }
 
-  async command(data: WsMessage) {
+  async command(data: WsMessage & { data: string }) {
     this.send('commandResult', await runCommand(data.data), data)
   }
 
@@ -57,7 +57,9 @@ export class WsPinConnectionSwitch extends WsEventMessageHandler {
     this.send('networkInterfaces', results, data)
   }
 
-  async wifiConnect(data: WsMessage) {
+  async wifiConnect(
+    data: WsMessage & { data: { ssid: string, password: string, iface: string } }
+  ) {
     const {ssid, password, iface} = data.data
 
     // establish wifi abilities

@@ -4,7 +4,7 @@ export type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPins' | 'c
 export interface WsMessage {
   responseId?: string
   eventType: string // eventTypes
-  data: any
+  data: unknown // let callers define the type
 }
 
 export interface Pins {

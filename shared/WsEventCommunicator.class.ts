@@ -18,7 +18,7 @@ export class WsEventCommunicator {
   lastMessage!: WsMessage
 
   loadCount = 0
-  ws?: WebSocket
+  ws?: WebSocket // when defined then we are connected
 
   promises: {
     [id: string]: {res: (data: WsMessage) => any, rej: () => any}

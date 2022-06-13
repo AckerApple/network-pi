@@ -1,24 +1,43 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.upgradeHttpServerToWebSocket = exports.addWebSocketToHttpServer = exports.startHttpWebSocketServer = void 0;
+const tslib_1 = require("tslib");
 const nodeStatic = require('node-static');
 const WebSocket = require("ws");
 const http = require("http");
 const url = require("url");
-function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePaths }) {
+function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFilePaths, onRequest = () => undefined }) {
     console.log('serving static files from', httpStaticFilePaths);
-    const server = http.createServer((req, res) => {
-        console.log('request', req.url);
+    const server = http.createServer((req, res) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+        onRequest(req, res);
         const reqUrl = req.url;
         const rUrl = {
             path: reqUrl.split('?').shift(),
             query: url.parse(reqUrl, true).query
         };
-        httpStaticFilePaths.forEach(path => {
+        let status = 404;
+        for (const path of httpStaticFilePaths) {
             var file = new nodeStatic.Server(path); // default includes {cache:3600}
-            file.serve(req, res);
-        });
-    });
+            status = yield new Promise((resolve, reject) => {
+                try {
+                    file.servePath(rUrl.path, 200, {}, req, res, (resStatus) => {
+                        resolve(resStatus);
+                    });
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+            if (status < 400) {
+                break;
+            }
+        }
+        // should we cause 404?
+        if (status >= 400) {
+            // cause request to close with 404 by fully serving to nodeStatus a bad path
+            new nodeStatic.Server(httpStaticFilePaths[0]).serve(req, res);
+        }
+    }));
     const wss = addWebSocketToHttpServer(server);
     server.listen(port, host, () => {
         console.log(`server started - ${host}:${port}`);

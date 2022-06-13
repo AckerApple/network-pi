@@ -6,23 +6,49 @@ import * as url from "url"
 export function startHttpWebSocketServer({
   port = 3000,
   host = '0.0.0.0',
-  httpStaticFilePaths
-}: {port: number, host: string, httpStaticFilePaths: string[]}
+  httpStaticFilePaths,
+  onRequest = () => undefined
+}: {
+  port: number
+  host: string
+  httpStaticFilePaths: string[]
+  onRequest?: (req: http.IncomingMessage, res: http.ServerResponse) => any
+}
 ): {http:http.Server, wss: WebSocket.Server} {
   console.log('serving static files from', httpStaticFilePaths)
 
-  const server = http.createServer((req,res)=>{
-    console.log('request', req.url)
+  const server = http.createServer(async (req,res)=> {
+    onRequest(req, res)
+
     const reqUrl = req.url as string
     const rUrl = {
       path  : reqUrl.split('?').shift(),
       query : url.parse(reqUrl, true).query
     }
 
-    httpStaticFilePaths.forEach(path => {
+    let status: number = 404
+    for (const path of httpStaticFilePaths) {
       var file = new nodeStatic.Server(path) // default includes {cache:3600}
-      file.serve(req, res)
-    })
+      status = await new Promise((resolve, reject) => {        
+        try {
+          file.servePath(rUrl.path, 200, {}, req, res, (resStatus: number) => {
+            resolve(resStatus)
+          })
+        } catch (err) {
+          reject(err)
+        }
+      })
+
+      if (status < 400) {
+        break
+      }
+    }
+
+    // should we cause 404?
+    if (status >= 400) {
+      // cause request to close with 404 by fully serving to nodeStatus a bad path
+      new nodeStatic.Server( httpStaticFilePaths[0] ).serve(req,res)
+    }
   })
 
   const wss = addWebSocketToHttpServer(server)

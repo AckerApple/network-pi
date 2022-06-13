@@ -3,7 +3,7 @@ export declare type eventTypes = 'pins' | 'setPins' | 'command' | 'log' | 'getPi
 export interface WsMessage {
     responseId?: string;
     eventType: string;
-    data: any;
+    data: unknown;
 }
 export interface Pins {
     [index: number]: pin;
