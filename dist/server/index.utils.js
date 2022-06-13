@@ -15,28 +15,30 @@ function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFil
             path: reqUrl.split('?').shift(),
             query: url.parse(reqUrl, true).query
         };
-        let status = 404;
+        let result = { status: 404, headers: {} };
         for (const path of httpStaticFilePaths) {
             var file = new nodeStatic.Server(path); // default includes {cache:3600}
-            status = yield new Promise((resolve, reject) => {
+            result = yield new Promise((resolve, reject) => {
                 try {
-                    file.servePath(rUrl.path, 200, {}, req, res, (resStatus) => {
-                        resolve(resStatus);
+                    file.servePath(rUrl.path, 200, {}, req, res, (status, headers) => {
+                        resolve({ status, headers });
                     });
                 }
                 catch (err) {
                     reject(err);
                 }
             });
-            if (status < 400) {
+            if (result.status < 400) {
                 break;
             }
         }
         // should we cause 404?
-        if (status >= 400) {
+        if (result.status >= 400) {
             // cause request to close with 404 by fully serving to nodeStatus a bad path
             new nodeStatic.Server(httpStaticFilePaths[0]).serve(req, res);
         }
+        res.writeHead(result.status, result.headers);
+        res.end();
     }));
     const wss = addWebSocketToHttpServer(server);
     server.listen(port, host, () => {
