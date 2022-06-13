@@ -33,9 +33,8 @@ function startHttpWebSocketServer({ port = 3000, host = '0.0.0.0', httpStaticFil
             }
         }
         // should we cause 404?
-        if (result.status >= 400) {
-            // cause request to close with 404 by fully serving to nodeStatus a bad path
-            new nodeStatic.Server(httpStaticFilePaths[0]).serve(req, res);
+        if (result.status < 300) {
+            return; // request already closed
         }
         res.writeHead(result.status, result.headers);
         res.end();
