@@ -1,3 +1,4 @@
+export * from "../shared/types" 
 import * as path from "path"
 import * as nconf from "nconf"
 import { startHttpWebSocketServer } from './index.utils'

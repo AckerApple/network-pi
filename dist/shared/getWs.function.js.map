@@ -1,0 +1,1 @@
+{"version":3,"file":"getWs.function.js","sourceRoot":"","sources":["../../shared/getWs.function.ts"],"names":[],"mappings":";;;;AAAA,MAAM,UAAU,GAAG,OAAO,SAAS,KAAK,WAAW,CAAA;AAEnD,SAAsB,KAAK;;QACzB,IAAI,UAAU,EAAE;YACd,uEAAuE;YACvE,MAAM,EAAE,GAAG,OAAO,CAAC,IAAI,CAAC,CAAA;YACxB,OAAO,EAAS,CAAA;SACjB;QAED,OAAO,SAAgB,CAAA;IACzB,CAAC;CAAA;AARD,sBAQC"}

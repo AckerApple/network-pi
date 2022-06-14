@@ -33,7 +33,7 @@ sudo ln -s "$NVM_DIR/versions/node/$(nvm version)/bin/npm" "/usr/local/bin/npm"
 ### Install
 
 ```
-npm install node-wiring-pi && npm install
+npm install ws git+https://github.com/ackerapple/network-pi.git
 ```
 
 You may need to install `node-wiring-pi` manually

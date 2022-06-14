@@ -1,6 +1,6 @@
 import { name, version } from "../../../package.json"
 import { eventTypes, PinState, ServerPinsSummary, WsMessage } from "../../../shared/types";
-import { WsEventCommunicator } from "../../../shared/WsEventCommunicator.class";
+import { WsEventCommunicatorBrowser } from "../../../shared/WsEventCommunicatorBrowser.class";
 import { Component } from '@angular/core';
 import { Subscription } from "rxjs";
 import { Systeminformation } from "systeminformation";
@@ -61,7 +61,7 @@ export class AppComponent {
     wsUrl, pins: {}
   }
 
-  wsComm: WsEventCommunicator = new WsEventCommunicator(this.config.wsUrl)
+  wsComm: WsEventCommunicatorBrowser = new WsEventCommunicatorBrowser(this.config.wsUrl)
 
   loadCount = 0
   title = 'network-pi-webapp';

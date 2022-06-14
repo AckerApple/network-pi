@@ -4,39 +4,28 @@
 /*!***********************!*\
   !*** ../package.json ***!
   \***********************/
-/*! exports provided: name, version, description, main, scripts, author, license, manualDependencies, peerDependencies, dependencies, devDependencies, default */
+/*! exports provided: name, version, description, main, typings, scripts, author, license, manualDependencies, peerDependencies, dependencies, devDependencies, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"network-pi\",\"version\":\"1.3.2\",\"description\":\"Acker testing platform for pi controlled over the network\",\"main\":\"index.js\",\"scripts\":{\"start:pi\":\"npm-run-all --parallel start:server:pi start:webapp:pi\",\"start:pi:ng\":\"npm-run-all --parallel start:server:pi start:webapp:ng\",\"start:webapp\":\"ack-reload --dir ./app/dist/network-pi-webapp/ --host 0.0.0.0\",\"start:webapp:ng\":\"cd app && npm run start -- --open --host 0.0.0.0 --disable-host-check\",\"start:webapp:pi\":\"sudo npm run start:webapp -- --port 80\",\"build\":\"npm run build:server && cd app && npm run build\",\"build:server\":\"tsc --project ./server/tsconfig.json\",\"start:server\":\"host=0.0.0.0 port=3000 ts-node server/index\",\"start:server:pi\":\"host=0.0.0.0 port=3000 npm run start:server\",\"start:server:watch\":\"ts-node-dev server/index\",\"start:server:watch:pi\":\"host=0.0.0.0 npm run start:server:watch\",\"test\":\"echo \\\"Error: no test specified\\\" && exit 1\",\"watch\":\"npm-run-all --parallel start:webapp:ng start:server:watch\",\"watch:pi\":\"npm-run-all --parallel start:webapp:pi start:server:watch:pi\",\"save\":\"npm run build && npm run save:server\",\"save:server\":\"npm --no-git-tag-version version patch && git add . && git commit -m \\\"update\\\" && git push\",\"serve:ng\":\"cd app && ng serve ./app/dist/network-pi-webapp\",\"start\":\"npm-run-all --parallel start:server start:webapp\",\"patch:version\":\"npm --no-git-tag-version version patch\",\"deploy\":\"npm run save\"},\"author\":\"Acker Apple\",\"license\":\"ISC\",\"manualDependencies\":{\"wiringpi-node\":\"^2.4.4\",\"node-wiring-pi\":\"0.0.5\"},\"peerDependencies\":{\"rxjs\":\">=6.6.7\",\"ws\":\">=7.4.4\"},\"dependencies\":{\"ack-pi\":\"git+https://github.com/ackerapple/ack-pi.git\",\"nconf\":\"^0.12.0\",\"node-static\":\"^0.7.11\",\"node-wifi\":\"^2.0.16\",\"node-wiring-pi\":\"0.0.5\",\"npm-run-all\":\"^4.1.5\",\"systeminformation\":\"^5.11.18\"},\"devDependencies\":{\"@types/nconf\":\"^0.10.2\",\"@types/node\":\"^17.0.42\",\"@types/ws\":\"^8.5.3\",\"ack-reload\":\"^4.0.0\",\"rxjs\":\"^7.3.0\",\"ts-node\":\"^10.8.1\",\"ts-node-dev\":\"^2.0.0\",\"typescript\":\"4.7.3\",\"ws\":\"^8.8.0\",\"zone.js\":\"^0.11.5\"}}");
+module.exports = JSON.parse("{\"name\":\"network-pi\",\"version\":\"1.3.3\",\"description\":\"Acker testing platform for pi controlled over the network\",\"main\":\"dist/index.js\",\"typings\":\"dist/index.d.ts\",\"scripts\":{\"start:pi\":\"npm-run-all --parallel start:server:pi start:webapp:pi\",\"start:pi:ng\":\"npm-run-all --parallel start:server:pi start:webapp:ng\",\"start:webapp\":\"ack-reload --dir ./app/dist/network-pi-webapp/ --host 0.0.0.0\",\"start:webapp:ng\":\"cd app && npm run start -- --open --host 0.0.0.0 --disable-host-check\",\"start:webapp:pi\":\"sudo npm run start:webapp -- --port 80\",\"build\":\"npm run build:server && cd app && npm run build\",\"build:server\":\"tsc --project ./server/tsconfig.json\",\"start:server\":\"host=0.0.0.0 port=3000 ts-node server/index\",\"start:server:pi\":\"host=0.0.0.0 port=3000 npm run start:server\",\"start:server:watch\":\"ts-node-dev server/index\",\"start:server:watch:pi\":\"host=0.0.0.0 npm run start:server:watch\",\"test\":\"echo \\\"Error: no test specified\\\" && exit 1\",\"watch\":\"npm-run-all --parallel start:webapp:ng start:server:watch\",\"watch:pi\":\"npm-run-all --parallel start:webapp:pi start:server:watch:pi\",\"save\":\"npm run build && npm run save:server\",\"save:server\":\"npm --no-git-tag-version version patch && git add . && git commit -m \\\"update\\\" && git push\",\"serve:ng\":\"cd app && ng serve ./app/dist/network-pi-webapp\",\"start\":\"npm-run-all --parallel start:server start:webapp\",\"patch:version\":\"npm --no-git-tag-version version patch\",\"deploy\":\"npm run save\"},\"author\":\"Acker Apple\",\"license\":\"ISC\",\"manualDependencies\":{\"wiringpi-node\":\"^2.4.4\",\"node-wiring-pi\":\"0.0.5\",\"ws\":\">=7.4.4\"},\"peerDependencies\":{\"rxjs\":\">=6.6.7\"},\"dependencies\":{\"ack-pi\":\"git+https://github.com/ackerapple/ack-pi.git\",\"nconf\":\"^0.12.0\",\"node-static\":\"^0.7.11\",\"node-wifi\":\"^2.0.16\",\"node-wiring-pi\":\"0.0.5\",\"npm-run-all\":\"^4.1.5\",\"systeminformation\":\"^5.11.18\"},\"devDependencies\":{\"@types/nconf\":\"^0.10.2\",\"@types/node\":\"^17.0.43\",\"@types/ws\":\"^8.5.3\",\"ack-reload\":\"^4.0.0\",\"rxjs\":\"^7.3.0\",\"ts-node\":\"^10.8.1\",\"ts-node-dev\":\"^2.0.0\",\"typescript\":\"4.7.3\",\"ws\":\"^8.8.0\",\"zone.js\":\"^0.11.5\"}}");
 
 /***/ }),
 
-/***/ "../shared/WsEventCommunicator.class.ts":
-/*!**********************************************!*\
-  !*** ../shared/WsEventCommunicator.class.ts ***!
-  \**********************************************/
-/*! exports provided: WsEventCommunicator */
+/***/ "../shared/WsEventCommunicatorBase.class.ts":
+/*!**************************************************!*\
+  !*** ../shared/WsEventCommunicatorBase.class.ts ***!
+  \**************************************************/
+/*! exports provided: WsEventCommunicatorBase */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WsEventCommunicator", function() { return WsEventCommunicator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WsEventCommunicatorBase", function() { return WsEventCommunicatorBase; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "../node_modules/rxjs/dist/esm/index.js");
 
 
-// const WebSocket = require('ws') // causes not for browser error
-const isWsNeeded = typeof WebSocket === 'undefined';
-function getWs() {
-    return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-        if (isWsNeeded) {
-            const ws = yield __webpack_require__.e(/*! import() | ws */ "ws").then(__webpack_require__.t.bind(null, /*! ws */ "../node_modules/ws/browser.js", 7));
-            return ws;
-        }
-        return WebSocket;
-    });
-}
-class WsEventCommunicator {
+class WsEventCommunicatorBase {
     constructor(url) {
         this.url = url;
         this.loadCount = 0;
@@ -57,15 +46,7 @@ class WsEventCommunicator {
         });
     }
     initSocket() {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            try {
-                const ws = new (yield getWs())(this.url);
-                this.socketListen(ws);
-            }
-            catch (err) {
-                console.error('failed to init socket', err);
-            }
-        });
+        throw 'initSocket must be overwritten by an extending class';
     }
     disconnect() {
         this.disconnectAsked = true;
@@ -159,6 +140,37 @@ class WsEventCommunicator {
 
 /***/ }),
 
+/***/ "../shared/WsEventCommunicatorBrowser.class.ts":
+/*!*****************************************************!*\
+  !*** ../shared/WsEventCommunicatorBrowser.class.ts ***!
+  \*****************************************************/
+/*! exports provided: WsEventCommunicatorBrowser */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WsEventCommunicatorBrowser", function() { return WsEventCommunicatorBrowser; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _WsEventCommunicatorBase_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./WsEventCommunicatorBase.class */ "../shared/WsEventCommunicatorBase.class.ts");
+
+
+class WsEventCommunicatorBrowser extends _WsEventCommunicatorBase_class__WEBPACK_IMPORTED_MODULE_1__["WsEventCommunicatorBase"] {
+    initSocket() {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            try {
+                const ws = new WebSocket(this.url);
+                this.socketListen(ws);
+            }
+            catch (err) {
+                console.error('failed to init socket', err);
+            }
+        });
+    }
+}
+
+
+/***/ }),
+
 /***/ "./$$_lazy_route_resource lazy recursive":
 /*!******************************************************!*\
   !*** ./$$_lazy_route_resource lazy namespace object ***!
@@ -228,7 +240,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../package.json */ "../package.json");
 var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../../package.json */ "../package.json", 1);
-/* harmony import */ var _shared_WsEventCommunicator_class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../shared/WsEventCommunicator.class */ "../shared/WsEventCommunicator.class.ts");
+/* harmony import */ var _shared_WsEventCommunicatorBrowser_class__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../shared/WsEventCommunicatorBrowser.class */ "../shared/WsEventCommunicatorBrowser.class.ts");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
 /* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
@@ -704,7 +716,7 @@ class AppComponent {
         this.config = this.loadLocalStorage() || {
             wsUrl, pins: {}
         };
-        this.wsComm = new _shared_WsEventCommunicator_class__WEBPACK_IMPORTED_MODULE_2__["WsEventCommunicator"](this.config.wsUrl);
+        this.wsComm = new _shared_WsEventCommunicatorBrowser_class__WEBPACK_IMPORTED_MODULE_2__["WsEventCommunicatorBrowser"](this.config.wsUrl);
         this.loadCount = 0;
         this.title = 'network-pi-webapp';
         this.wifi = {};

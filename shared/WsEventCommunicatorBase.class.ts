@@ -1,18 +1,7 @@
 import { WsMessage } from './types'
 import { Subject } from 'rxjs'
-// const WebSocket = require('ws') // causes not for browser error
 
-const isWsNeeded = typeof WebSocket === 'undefined'
-async function getWs(): Promise<any> {
-  if (isWsNeeded) {
-    const ws = await import('ws')
-    return ws as any
-  }
-
-  return WebSocket as any
-}
-
-export class WsEventCommunicator {
+export class WsEventCommunicatorBase {
   reconnectTimer: any
   disconnectAsked?: boolean
   lastMessage!: WsMessage
@@ -42,13 +31,8 @@ export class WsEventCommunicator {
     return this.initSocket()
   }
 
-  async initSocket() {
-    try {
-      const ws = new (await getWs())(this.url)
-      this.socketListen(ws)
-    } catch (err) {
-      console.error('failed to init socket', err);
-    }
+  initSocket() {
+    throw 'initSocket must be overwritten by an extending class'
   }
 
   disconnect() {

@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WsEventCommunicator = void 0;
+exports.WsEventCommunicatorBase = void 0;
 const tslib_1 = require("tslib");
 const rxjs_1 = require("rxjs");
-const getWs_function_1 = require("./getWs.function");
-class WsEventCommunicator {
+class WsEventCommunicatorBase {
     constructor(url) {
         this.url = url;
         this.loadCount = 0;
@@ -25,15 +24,7 @@ class WsEventCommunicator {
         });
     }
     initSocket() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            try {
-                const ws = new (yield (0, getWs_function_1.getWs)())(this.url);
-                this.socketListen(ws);
-            }
-            catch (err) {
-                console.error('failed to init socket', err);
-            }
-        });
+        throw 'initSocket must be overwritten by an extending class';
     }
     disconnect() {
         this.disconnectAsked = true;
@@ -123,5 +114,5 @@ class WsEventCommunicator {
         return this.sendWaitMessageResponse(message);
     }
 }
-exports.WsEventCommunicator = WsEventCommunicator;
-//# sourceMappingURL=WsEventCommunicator.class.js.map
+exports.WsEventCommunicatorBase = WsEventCommunicatorBase;
+//# sourceMappingURL=WsEventCommunicatorBase.class.js.map
